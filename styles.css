@@ -20,6 +20,30 @@ body {
     flex-direction: column;
     padding: 14px;
 }
+        button {
+        background: #1b98e0;
+        color: #eaf6ff;
+        border: none;
+        border-radius: 8px;
+        padding: 4px 5px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(27,152,224,0.15);
+        transition: background 0.2s, transform 0.2s;
+        display: flex;
+        
+        align-items: center;
+        gap: 3px;
+    }
+    
+    button::before {
+    content: "➕";
+    margin-right: 2px;
+}
+    
+    button:hover {
+        background: #21e6c1;
+        transform: scale(1.05);
+    }
 
 .box a {
     color: #21e6c1;         
