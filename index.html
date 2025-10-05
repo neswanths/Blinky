@@ -5,32 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blinky</title>
     <link rel="stylesheet" href="styles.css" />
-    <!-- <link rel="icon" type="image/png" href="blinky-favicon.png"/> -->
     <link rel="icon" type="image/png" href="blinky-favicon.png" />
   </head>
   <body>
-    <div class="container">
-      <div class="box">
-        <h3>AI Tools</h3>
-        <button type="button" id="aitools">Add url</button>
-        <ul id="aiList"></ul>
-      </div>
-      <div class="box">
-        <h3>Learning sites</h3>
-        <button>Add url</button>
-        <ul id="learninglist"></ul>
-      </div>
-      <div class="box">
-        <h3>Productivity Tools</h3>
-        <button>Add url</button>
-        <ul id="productivitylist"></ul>
-      </div>
-      <div class="box">
-        <h3>Others</h3>
-        <button>Add url</button>
-        <ul id="otherslist"></ul>
-      </div>
+    <div id="addSection">
+      <button type="button" onclick="addSection()">New Section</button>
     </div>
+    <div class="container"></div>
     <script src="script.js"></script>
   </body>
 </html>
