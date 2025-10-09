@@ -51,6 +51,23 @@ function addAnotherBlock(block, blockName) {
   const ul = document.createElement("ul");
   ul.setAttribute("id", blockName + "List");
   box.appendChild(ul);
+  
+  const deleteSectionBtn = document.createElement('button');
+deleteSectionBtn.className = 'deleteSectionBtn';
+deleteSectionBtn.textContent = 'x'; // cross mark for delete
+box.appendChild(deleteSectionBtn);
+
+deleteSectionBtn.addEventListener('click', () => {
+// Remove from localStorage
+const links = getStoredLinks();
+if (links[blockName]) {
+delete links[blockName];
+saveStoredLinks(links);
+}
+// Remove the section element from DOM
+box.remove();
+});
+
   const container = document.querySelector(".container");
   container.appendChild(box);
   setupFormButton(
@@ -64,13 +81,17 @@ function addUrl(ulId, url, domain, name, save = true) {
   var li = document.createElement("li");
   var img = document.createElement("img");
   var a = document.createElement("a");
+  let button = document.createElement("button");
   img.src = "https://www.google.com/s2/favicons?domain=" + domain + "&sz=32";
   img.alt = "favicon";
   a.href = url;
   a.target = "_blank";
   a.textContent = name;
+  button.setAttribute("class", "deleteBtn");
+  button.textContent = "x";
   li.appendChild(img);
   li.appendChild(a);
+  li.appendChild(button);
   ul.appendChild(li);
   if (!save) return;
   const links = getStoredLinks();
@@ -97,8 +118,6 @@ function loadStoredLinks() {
     });
   });
 }
-
-window.addEventListener("DOMContentLoaded", loadStoredLinks);
 
 function setupFormButton(btnId, divClass, listId) {
   const btn = document.getElementById(btnId);
@@ -136,3 +155,19 @@ function openForm(e, div, list) {
     }
   });
 }
+window.addEventListener("DOMContentLoaded", loadStoredLinks);
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("deleteBtn")) {
+    const li = e.target.closest("li");
+    const ul = li.parentElement;
+    const ulId = ul.id;
+    const links = getStoredLinks();
+    const anchor = li.querySelector("a");
+    const urlToRemove = anchor.href;
+    if (links[ulId]) {
+      links[ulId] = links[ulId].filter((link) => link.url !== urlToRemove);
+      saveStoredLinks(links);
+    }
+    li.remove();
+  }
+});
