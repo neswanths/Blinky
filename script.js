@@ -1,16 +1,62 @@
-function getStoredLinks() {
-  try {
-    return JSON.parse(localStorage.getItem("blinkyLinks") || "{}");
-  } catch (e) {
-    console.error("Failed to parse blinkyLinks:", e);
-    return {};
-  }
-}
-function saveStoredLinks(data) {
-  localStorage.setItem("blinkyLinks", JSON.stringify(data));
+// Load data from localStorage on page load
+function loadFromLocalStorage() {
+  const sections = JSON.parse(localStorage.getItem('sections')) || [];
+  sections.forEach(section => {
+    createSection(section.title, section.id, false);
+    section.links.forEach(link => {
+      addUrl(section.id + 'List', link.url, link.domain, link.name, false);
+    });
+  });
 }
 
-function addSection() {
+// Get sections from localStorage
+function getSections() {
+  return JSON.parse(localStorage.getItem('sections')) || [];
+}
+
+// Save sections to localStorage
+function setSections(sections) {
+  localStorage.setItem('sections', JSON.stringify(sections));
+}
+
+// Add a new section to localStorage
+function addSectionToLS(title, id) {
+  const sections = getSections();
+  sections.push({
+    title: title,
+    id: id,
+    links: []
+  });
+  setSections(sections);
+}
+
+// Delete a section from localStorage
+function deleteSectionFromLS(sectionId) {
+  const sections = getSections();
+  const filtered = sections.filter(section => section.id !== sectionId);
+  setSections(filtered);
+}
+
+// Add a link to a section in localStorage
+function addLinkToLS(sectionId, url, domain, name) {
+  const sections = getSections();
+  const section = sections.find(s => s.id === sectionId);
+  if (section) {
+    section.links.push({ url, domain, name });
+    setSections(sections);
+  }
+}
+
+// Delete a link from a section in localStorage
+function deleteLinkFromLS(sectionId, url) {
+  const sections = getSections();
+  const section = sections.find(s => s.id === sectionId);
+  if (section) {
+    section.links = section.links.filter(link => link.url !== url);
+    setSections(sections);
+  }
+}
+function addNewSection() {
   const form = document.createElement("form");
   const blockName = document.createElement("input");
   blockName.setAttribute("placeholder", "Enter Section Name...");
@@ -19,7 +65,7 @@ function addSection() {
   btn.setAttribute("type", "submit");
   btn.textContent = "confirm";
   form.appendChild(btn);
-  const div = document.getElementById("addSection");
+  const div = document.getElementById("addNewSection");
   div.appendChild(form);
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -27,16 +73,18 @@ function addSection() {
     if (raw !== "") {
       const blockTitle = raw;
       const blockId = raw.replace(/\s+/g, "-").toLowerCase();
-      addAnotherBlock(blockTitle, blockId);
+      createSection(blockTitle, blockId);
+      addSectionToLS(blockTitle, blockId)
       form.remove();
     } else {
       alert("Fill the field");
     }
   });
 }
-function addAnotherBlock(block, blockName) {
+function createSection(block, blockName,save = true) {
   const box = document.createElement("div");
   box.setAttribute("class", "box");
+  box.setAttribute("data-section-id", blockName);
   const h3 = document.createElement("h3");
   h3.appendChild(document.createTextNode(block));
   box.appendChild(h3);
@@ -51,26 +99,21 @@ function addAnotherBlock(block, blockName) {
   const ul = document.createElement("ul");
   ul.setAttribute("id", blockName + "List");
   box.appendChild(ul);
-  
-  const deleteSectionBtn = document.createElement('button');
-deleteSectionBtn.className = 'deleteSectionBtn';
-deleteSectionBtn.textContent = 'x'; // cross mark for delete
-box.appendChild(deleteSectionBtn);
 
-deleteSectionBtn.addEventListener('click', () => {
-// Remove from localStorage
-const links = getStoredLinks();
-if (links[blockName]) {
-delete links[blockName];
-saveStoredLinks(links);
-}
-// Remove the section element from DOM
-box.remove();
-});
+  const deleteSectionBtn = document.createElement("button");
+  deleteSectionBtn.className = "deleteSectionBtn";
+  deleteSectionBtn.textContent = "x";
+  box.appendChild(deleteSectionBtn);
+
+  deleteSectionBtn.addEventListener("click", () => {
+    deleteSectionFromLS(blockName); 
+    ul.remove();
+    box.remove();
+  });
 
   const container = document.querySelector(".container");
   container.appendChild(box);
-  setupFormButton(
+  invokeGetUrl(
     blockName + "btn",
     "." + blockName + "-block",
     blockName + "List"
@@ -78,7 +121,9 @@ box.remove();
 }
 function addUrl(ulId, url, domain, name, save = true) {
   const ul = document.getElementById(ulId);
+  const sectionId = ulId.replace('List', '');
   var li = document.createElement("li");
+  li.setAttribute("data-url", url); 
   var img = document.createElement("img");
   var a = document.createElement("a");
   let button = document.createElement("button");
@@ -89,85 +134,64 @@ function addUrl(ulId, url, domain, name, save = true) {
   a.textContent = name;
   button.setAttribute("class", "deleteBtn");
   button.textContent = "x";
+  button.addEventListener('click',() =>{
+    deleteLinkFromLS(sectionId, url);
+    li.remove();
+  });
   li.appendChild(img);
   li.appendChild(a);
   li.appendChild(button);
   ul.appendChild(li);
-  if (!save) return;
-  const links = getStoredLinks();
-  if (!links[ulId]) links[ulId] = [];
-  links[ulId].push({ url, domain, name });
-  saveStoredLinks(links);
-}
-function loadStoredLinks() {
-  const links = getStoredLinks();
-  Object.keys(links).forEach((ulId) => {
-    if (!document.getElementById(ulId)) {
-      if (ulId.endsWith("List")) {
-        const id = ulId.slice(0, -4);
-        const title = id.replace(/-/g, " ");
-        addAnotherBlock(title.charAt(0).toUpperCase() + title.slice(1), id);
-      }
-    }
-  });
-  Object.keys(links).forEach((ulId) => {
-    links[ulId].forEach((link) => {
-      if (link && link.url && link.domain && link.name) {
-        addUrl(ulId, link.url, link.domain, link.name, false);
-      }
-    });
-  });
+  if (save){
+    addLinkToLS(sectionId, url, domain, name);
+  }
 }
 
-function setupFormButton(btnId, divClass, listId) {
+function invokeGetUrl(btnId, divClass, listId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
   const div = document.querySelector(divClass);
   const list = document.getElementById(listId);
   btn.addEventListener("click", function (e) {
-    openForm(e, div, list);
+    getUrl(e, div, list);
   });
 }
-function openForm(e, div, list) {
+function isValidUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+function getUrl(e, div, list) {
   e.preventDefault();
   const form = document.createElement("form");
   const url = document.createElement("input");
   url.setAttribute("placeholder", "Enter url");
-  const domain = document.createElement("input");
-  domain.setAttribute("placeholder", "Enter domain name");
-  const name = document.createElement("input");
-  name.setAttribute("placeholder", "Enter name");
   const submit = document.createElement("button");
   submit.setAttribute("type", "submit");
   submit.textContent = "add";
   form.appendChild(url);
-  form.appendChild(domain);
-  form.appendChild(name);
   form.appendChild(submit);
   div.appendChild(form);
   form.addEventListener("submit", function (ev) {
     ev.preventDefault();
-    if (url.value !== "" && domain.value !== "" && name.value !== "") {
-      addUrl(list.id, url.value, domain.value, name.value);
+    let urlVal = url.value;
+
+    if (!urlVal.startsWith("http://") && !urlVal.startsWith("https://")) {
+      urlVal = "https://" + urlVal;
+    }
+    if (isValidUrl(urlVal)) {
+      const urlObj = new URL(urlVal);
+      const domain = urlObj.hostname;
+      const parts = domain.split(".");
+      const name = parts.length > 2 ? parts[parts.length - 2] : parts[0];
+      if (domain !== "" || name !== "") addUrl(list.id, urlVal, domain, name);
       form.remove();
     } else {
-      alert("Fill all fields");
+      alert("Please enter valid URL. Example : https://google.com");
     }
   });
 }
-window.addEventListener("DOMContentLoaded", loadStoredLinks);
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("deleteBtn")) {
-    const li = e.target.closest("li");
-    const ul = li.parentElement;
-    const ulId = ul.id;
-    const links = getStoredLinks();
-    const anchor = li.querySelector("a");
-    const urlToRemove = anchor.href;
-    if (links[ulId]) {
-      links[ulId] = links[ulId].filter((link) => link.url !== urlToRemove);
-      saveStoredLinks(links);
-    }
-    li.remove();
-  }
-});
+document.addEventListener('DOMContentLoaded', loadFromLocalStorage);

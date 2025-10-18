@@ -298,3 +298,30 @@ button:hover{
 li:hover .deleteBtn {
   visibility: visible;
 }
+
+
+ul, .container {
+  min-height: 20px;
+}
+
+.drag-over {
+  background-color: #f0f8ff;
+}
+li {
+  transition: transform 0.15s ease;
+}
+li, .box {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+ul {
+  min-height: 30px; /* Allow dropping in empty lists */
+}
+
+ul.drag-over {
+  background-color: rgba(0, 0, 0, 0.05);
+}
