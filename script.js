@@ -56,6 +56,7 @@ function createSection(block, blockName,save = true,existingSection = null) {
   box.appendChild(formBlock);
   const ul = document.createElement("ul");
   ul.setAttribute("id", blockName + "List");
+  ul.id = blockName+"List";
   box.appendChild(ul);
   const deleteSectionBtn = document.createElement("button");
   deleteSectionBtn.className = "deleteSectionBtn";
@@ -91,6 +92,10 @@ function createSection(block, blockName,save = true,existingSection = null) {
 }
 function addUrl(blockName, ulId, url, domain, name, save = true) {
   const ul = document.getElementById(ulId);
+  if(!ul){
+    console.warn("UL element not found:", ulId);
+    return;
+  }
   var li = document.createElement("li");
   li.setAttribute("id", url);
   var img = document.createElement("img");
@@ -120,7 +125,7 @@ function addUrl(blockName, ulId, url, domain, name, save = true) {
     if (!section.links) section.links = [];
     section.links.push({
       blockName: blockName,
-      ulId: ulId,
+      ulId: blockName+"List",
       url: url,
       domain: domain,
       name: name,
