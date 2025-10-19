@@ -1,60 +1,19 @@
-// Load data from localStorage on page load
-function loadFromLocalStorage() {
-  const sections = JSON.parse(localStorage.getItem('sections')) || [];
-  sections.forEach(section => {
-    createSection(section.title, section.id, false);
-    section.links.forEach(link => {
-      addUrl(section.id + 'List', link.url, link.domain, link.name, false);
+document.addEventListener("DOMContentLoaded", () => {
+  const sections = getSections();
+  sections.forEach((section) => {
+    createSection(section.title,section.id,false,section);
+    if(!section.links) section.links = [];
+    section.links.forEach((link) => {
+      addUrl(section.id, link.ulId, link.url, link.domain, link.name, false);
     });
   });
-}
-
-// Get sections from localStorage
+});
 function getSections() {
-  return JSON.parse(localStorage.getItem('sections')) || [];
+  const data = localStorage.getItem("sections");
+  return data ? JSON.parse(data) : [];
 }
-
-// Save sections to localStorage
 function setSections(sections) {
-  localStorage.setItem('sections', JSON.stringify(sections));
-}
-
-// Add a new section to localStorage
-function addSectionToLS(title, id) {
-  const sections = getSections();
-  sections.push({
-    title: title,
-    id: id,
-    links: []
-  });
-  setSections(sections);
-}
-
-// Delete a section from localStorage
-function deleteSectionFromLS(sectionId) {
-  const sections = getSections();
-  const filtered = sections.filter(section => section.id !== sectionId);
-  setSections(filtered);
-}
-
-// Add a link to a section in localStorage
-function addLinkToLS(sectionId, url, domain, name) {
-  const sections = getSections();
-  const section = sections.find(s => s.id === sectionId);
-  if (section) {
-    section.links.push({ url, domain, name });
-    setSections(sections);
-  }
-}
-
-// Delete a link from a section in localStorage
-function deleteLinkFromLS(sectionId, url) {
-  const sections = getSections();
-  const section = sections.find(s => s.id === sectionId);
-  if (section) {
-    section.links = section.links.filter(link => link.url !== url);
-    setSections(sections);
-  }
+  localStorage.setItem("sections", JSON.stringify(sections));
 }
 function addNewSection() {
   const form = document.createElement("form");
@@ -74,17 +33,16 @@ function addNewSection() {
       const blockTitle = raw;
       const blockId = raw.replace(/\s+/g, "-").toLowerCase();
       createSection(blockTitle, blockId);
-      addSectionToLS(blockTitle, blockId)
       form.remove();
     } else {
       alert("Fill the field");
     }
   });
 }
-function createSection(block, blockName,save = true) {
+function createSection(block, blockName,save = true,existingSection = null) {
   const box = document.createElement("div");
   box.setAttribute("class", "box");
-  box.setAttribute("data-section-id", blockName);
+  box.setAttribute("id", blockName);
   const h3 = document.createElement("h3");
   h3.appendChild(document.createTextNode(block));
   box.appendChild(h3);
@@ -99,31 +57,42 @@ function createSection(block, blockName,save = true) {
   const ul = document.createElement("ul");
   ul.setAttribute("id", blockName + "List");
   box.appendChild(ul);
-
   const deleteSectionBtn = document.createElement("button");
   deleteSectionBtn.className = "deleteSectionBtn";
   deleteSectionBtn.textContent = "x";
   box.appendChild(deleteSectionBtn);
-
   deleteSectionBtn.addEventListener("click", () => {
-    deleteSectionFromLS(blockName); 
+    let sections = getSections();
+    sections = sections.filter((s) => s.id !== blockName);
+    setSections(sections);
     ul.remove();
     box.remove();
   });
-
   const container = document.querySelector(".container");
   container.appendChild(box);
   invokeGetUrl(
+    blockName,
     blockName + "btn",
     "." + blockName + "-block",
     blockName + "List"
   );
+  if(save && !existingSection){
+    const sections = getSections();
+    const exists = sections.find((s) => s.id === blockName);
+    if(!exists){
+      sections.push({
+        title: blockName,
+        id: blockName,
+        links: [],
+      });
+      setSections(sections);
+    }
+  }
 }
-function addUrl(ulId, url, domain, name, save = true) {
+function addUrl(blockName, ulId, url, domain, name, save = true) {
   const ul = document.getElementById(ulId);
-  const sectionId = ulId.replace('List', '');
   var li = document.createElement("li");
-  li.setAttribute("data-url", url); 
+  li.setAttribute("id", url);
   var img = document.createElement("img");
   var a = document.createElement("a");
   let button = document.createElement("button");
@@ -134,26 +103,39 @@ function addUrl(ulId, url, domain, name, save = true) {
   a.textContent = name;
   button.setAttribute("class", "deleteBtn");
   button.textContent = "x";
-  button.addEventListener('click',() =>{
-    deleteLinkFromLS(sectionId, url);
+  button.addEventListener("click", () => {
+    const sections = getSections();
+    const section = sections.find((s) => s.id === blockName);
+    section.links = section.links.filter((l) => l.url !== url);
+    setSections(sections);
     li.remove();
   });
   li.appendChild(img);
   li.appendChild(a);
   li.appendChild(button);
   ul.appendChild(li);
-  if (save){
-    addLinkToLS(sectionId, url, domain, name);
+  if (save) {
+    const sections = getSections();
+    const section = sections.find((s) => s.id === blockName);
+    if (!section.links) section.links = [];
+    section.links.push({
+      blockName: blockName,
+      ulId: ulId,
+      url: url,
+      domain: domain,
+      name: name,
+    });
+    setSections(sections);
   }
 }
 
-function invokeGetUrl(btnId, divClass, listId) {
+function invokeGetUrl(blockName, btnId, divClass, listId) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
   const div = document.querySelector(divClass);
   const list = document.getElementById(listId);
   btn.addEventListener("click", function (e) {
-    getUrl(e, div, list);
+    getUrl(blockName, e, div, list);
   });
 }
 function isValidUrl(string) {
@@ -164,7 +146,7 @@ function isValidUrl(string) {
     return false;
   }
 }
-function getUrl(e, div, list) {
+function getUrl(blockName, e, div, list) {
   e.preventDefault();
   const form = document.createElement("form");
   const url = document.createElement("input");
@@ -187,11 +169,11 @@ function getUrl(e, div, list) {
       const domain = urlObj.hostname;
       const parts = domain.split(".");
       const name = parts.length > 2 ? parts[parts.length - 2] : parts[0];
-      if (domain !== "" || name !== "") addUrl(list.id, urlVal, domain, name);
+      if (domain !== "" || name !== "")
+        addUrl(blockName, list.id, urlVal, domain, name);
       form.remove();
     } else {
       alert("Please enter valid URL. Example : https://google.com");
     }
   });
 }
-document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
