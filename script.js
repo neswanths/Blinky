@@ -1,19 +1,38 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const sections = getSections();
+ async function renderAllSections(){
+  const container = document.querySelector('.container');
+  container.innerHTML = '';
+  const sections = await getSections();
   sections.forEach((section) => {
-    createSection(section.title,section.id,false,section);
+    createSection(section.title, section.id, false, section);
     if(!section.links) section.links = [];
     section.links.forEach((link) => {
       addUrl(section.id, link.ulId, link.url, link.domain, link.name, false);
     });
   });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await renderAllSections();
 });
-function getSections() {
+
+// Re-render when storage switches or data merges
+window.addEventListener('store-changed', async () => {
+  await renderAllSections();
+});
+
+async function getSections() {
+  if(window.Store) {
+    return await window.Store.getSections();
+  }
   const data = localStorage.getItem("sections");
   return data ? JSON.parse(data) : [];
 }
-function setSections(sections) {
-  localStorage.setItem("sections", JSON.stringify(sections));
+async function setSections(sections) {
+  if(window.Store) {
+    await window.Store.setSections(sections);
+  } else {
+    localStorage.setItem("sections", JSON.stringify(sections));
+  }
 }
 function addNewSection() {
   const form = document.createElement("form");
@@ -26,20 +45,20 @@ function addNewSection() {
   form.appendChild(btn);
   const div = document.getElementById("addNewSection");
   div.appendChild(form);
-  form.addEventListener("submit", function (e) {
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
     const raw = blockName.value.trim();
     if (raw !== "") {
       const blockTitle = raw;
       const blockId = raw.replace(/\s+/g, "-").toLowerCase();
-      createSection(blockTitle, blockId);
+      await createSection(blockTitle, blockId);
       form.remove();
     } else {
       alert("Fill the field");
     }
   });
 }
-function createSection(block, blockName,save = true,existingSection = null) {
+async function createSection(block, blockName,save = true,existingSection = null) {
   const box = document.createElement("div");
   box.setAttribute("class", "box");
   box.setAttribute("id", blockName);
@@ -62,10 +81,10 @@ function createSection(block, blockName,save = true,existingSection = null) {
   deleteSectionBtn.className = "deleteSectionBtn";
   deleteSectionBtn.textContent = "x";
   box.appendChild(deleteSectionBtn);
-  deleteSectionBtn.addEventListener("click", () => {
+  deleteSectionBtn.addEventListener("click", async () => {
     let sections = getSections();
     sections = sections.filter((s) => s.id !== blockName);
-    setSections(sections);
+    await setSections(sections);
     ul.remove();
     box.remove();
   });
@@ -78,7 +97,7 @@ function createSection(block, blockName,save = true,existingSection = null) {
     blockName + "List"
   );
   if(save && !existingSection){
-    const sections = getSections();
+    const sections = await getSections();
     const exists = sections.find((s) => s.id === blockName);
     if(!exists){
       sections.push({
@@ -86,11 +105,11 @@ function createSection(block, blockName,save = true,existingSection = null) {
         id: blockName,
         links: [],
       });
-      setSections(sections);
+      await setSections(sections);
     }
   }
 }
-function addUrl(blockName, ulId, url, domain, name, save = true) {
+async function addUrl(blockName, ulId, url, domain, name, save = true) {
   const ul = document.getElementById(ulId);
   if(!ul){
     console.warn("UL element not found:", ulId);
@@ -108,7 +127,7 @@ function addUrl(blockName, ulId, url, domain, name, save = true) {
   a.textContent = name;
   button.setAttribute("class", "deleteBtn");
   button.textContent = "x";
-  button.addEventListener("click", () => {
+  button.addEventListener("click", async () => {
     const sections = getSections();
     const section = sections.find((s) => s.id === blockName);
     section.links = section.links.filter((l) => l.url !== url);
@@ -120,7 +139,7 @@ function addUrl(blockName, ulId, url, domain, name, save = true) {
   li.appendChild(button);
   ul.appendChild(li);
   if (save) {
-    const sections = getSections();
+    const sections = await getSections();
     const section = sections.find((s) => s.id === blockName);
     if (!section.links) section.links = [];
     section.links.push({
@@ -130,7 +149,8 @@ function addUrl(blockName, ulId, url, domain, name, save = true) {
       domain: domain,
       name: name,
     });
-    setSections(sections);
+     section.lastUpdated = Date.now();
+    await setSections(sections);
   }
 }
 

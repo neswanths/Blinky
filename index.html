@@ -6,9 +6,20 @@
     <title>Blinky</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" type="image/png" href="blinky-favicon.png" />
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-init.js" defer></script>
+    <script src="storage.js" defer></script>
     <script src="script.js" defer></script>
   </head>
   <body>
+     <div style="padding: 10px; background: #f0f0f0; margin-bottom: 10px;">
+    <span id="user-info">Not signed in</span>
+    <button id="sign-in-google">Google Sign-In</button>
+    <button id="sign-in-email">Email Sign-In</button>
+    <button id="sign-out" style="display:none;">Sign Out</button>
+  </div>
     <div id="addNewSection">
       <button type="button" onclick="addNewSection()">New Domain</button>
     </div>
