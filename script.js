@@ -12,8 +12,79 @@
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // --- Render Sections ---
   await renderAllSections();
+
+  // --- Auth Elements ---
+  const logo = document.getElementById("user-logo");
+  const dropdown = document.getElementById("auth-dropdown");
+  const googleLoginBtn = document.getElementById("google-login");
+  const emailLoginBtn = document.getElementById("email-login");
+  const authStatus = document.getElementById("auth-status");
+
+  // --- Simulate Login State ---
+  const isLoggedIn = window.isLoggedIn || false;
+  if (!isLoggedIn) logo.classList.add("alert");
+  else logo.classList.remove("alert");
+
+  // --- Dropdown Toggle ---
+  logo.addEventListener("click", () => {
+    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+  });
+  document.addEventListener("click", (e) => {
+    if (!logo.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+
+  // --- Google Login ---
+  googleLoginBtn.addEventListener("click", async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      const result = await firebase.auth().signInWithPopup(provider);
+      const user = result.user;
+      console.log("Logged in with Google:", user);
+      window.isLoggedIn = true;
+      authStatus.textContent = `Logged in as ${user.displayName || user.email}`;
+
+      logo.classList.remove("alert");
+      dropdown.style.display = "none";
+
+      if (user.photoURL) {
+        logo.style.background = `url(${user.photoURL}) center/cover no-repeat`;
+      }
+    } catch (error) {
+      console.error("Google login failed:", error);
+      alert(error.message);
+    }
+  });
+
+  // --- Email Login ---
+  emailLoginBtn.addEventListener("click", async () => {
+    const email = prompt("Enter your email:");
+    const password = prompt("Enter your password:");
+    if (!email || !password) return alert("Email and password required!");
+
+    try {
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+      console.log("Logged in with email:", user);
+      window.isLoggedIn = true;
+      authStatus.textContent = `Logged in as ${user.email}`;
+
+      logo.classList.remove("alert");
+      dropdown.style.display = "none";
+
+      if (user.photoURL) {
+        logo.style.background = `url(${user.photoURL}) center/cover no-repeat`;
+      }
+    } catch (error) {
+      console.error("Email login failed:", error);
+      alert(error.message);
+    }
+  });
 });
+
 
 // Re-render when storage switches or data merges
 window.addEventListener('store-changed', async () => {
@@ -82,7 +153,7 @@ async function createSection(block, blockName,save = true,existingSection = null
   deleteSectionBtn.textContent = "x";
   box.appendChild(deleteSectionBtn);
   deleteSectionBtn.addEventListener("click", async () => {
-    let sections = getSections();
+    let sections = await getSections();
     sections = sections.filter((s) => s.id !== blockName);
     await setSections(sections);
     ul.remove();
@@ -128,7 +199,7 @@ async function addUrl(blockName, ulId, url, domain, name, save = true) {
   button.setAttribute("class", "deleteBtn");
   button.textContent = "x";
   button.addEventListener("click", async () => {
-    const sections = getSections();
+    const sections = await getSections();
     const section = sections.find((s) => s.id === blockName);
     section.links = section.links.filter((l) => l.url !== url);
     setSections(sections);

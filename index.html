@@ -14,12 +14,15 @@
     <script src="script.js" defer></script>
   </head>
   <body>
-     <div style="padding: 10px; background: #f0f0f0; margin-bottom: 10px;">
-    <span id="user-info">Not signed in</span>
-    <button id="sign-in-google">Google Sign-In</button>
-    <button id="sign-in-email">Email Sign-In</button>
-    <button id="sign-out" style="display:none;">Sign Out</button>
+<div class="auth-container">
+  <div class="user-logo" id="user-logo"></div>
+  <div class="auth-dropdown" id="auth-dropdown">
+    <span id="auth-status">Not logged in</span>
+    <button id="google-login">Google Login</button>
+    <button id="email-login">Email Login</button>
   </div>
+</div>
+
     <div id="addNewSection">
       <button type="button" onclick="addNewSection()">New Domain</button>
     </div>
