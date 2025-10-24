@@ -202,7 +202,7 @@ async function addUrl(blockName, ulId, url, domain, name, save = true) {
     const sections = await getSections();
     const section = sections.find((s) => s.id === blockName);
     section.links = section.links.filter((l) => l.url !== url);
-    setSections(sections);
+    await setSections(sections);
     li.remove();
   });
   li.appendChild(img);
