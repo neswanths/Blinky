@@ -1,7 +1,7 @@
 const API_URL =
   location.hostname === "localhost"
     ? "http://127.0.0.1:8000"
-    : "https://YOUR-GENERATED-RAILWAY-URL.up.railway.app";
+    : "https://blinky-production-3125.up.railway.app";
 
 const API = {
   getToken: () => localStorage.getItem("accessToken"),
