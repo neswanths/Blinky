@@ -6,6 +6,7 @@ from sqlalchemy import Column, ForeignKey, Integer
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from typing import List, Optional
@@ -128,12 +129,9 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
         "http://localhost",
         "http://127.0.0.1",
+        "https://neswanths.github.io"
     ],
     allow_credentials=True,
     allow_methods=["*"],
