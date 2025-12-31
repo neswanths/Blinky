@@ -1,7 +1,8 @@
 const API_URL =
-  location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  location.hostname === "localhost"
     ? "http://127.0.0.1:8000"
-    : "";
+    : "https://YOUR-GENERATED-RAILWAY-URL.up.railway.app";
+
 const API = {
   getToken: () => localStorage.getItem("accessToken"),
   setToken: (token) => localStorage.setItem("accessToken", token),
