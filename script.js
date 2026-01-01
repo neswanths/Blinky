@@ -88,14 +88,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   navRegisterBtn.addEventListener("click", () => {
     openModal({
       title: "Sign Up",
-      desc: "Create a minimal account. No spam, ever.",
+      desc: "Create a minimal account. To get started.",
       btnText: "Create Account",
       inputs: [
         { type: "email", placeholder: "Email Address", id: "reg-email" },
         { type: "password", placeholder: "Choose Password", id: "reg-pass" }
       ],
       onConfirm: async (values) => {
-        if(values["reg-pass"].length < 4) {
+        if(values["reg-pass"].length < 8) {
           showError("reg-pass", "Password is too short");
           return false; 
         }
@@ -177,8 +177,8 @@ function renderGuestState() {
 
   container.innerHTML = `
     <div class="guest-state">
-      <h2>⚠️ Sync is Paused</h2>
-      <p>You are currently browsing as a guest.</p>
+      <h2>⚠️ You are currently browsing as a guest.</h2>
+      <p>Sync is Paused</p>
       <p style="color: var(--muted); margin-bottom: 24px; font-size: 0.9rem;">
         Any bookmarks you try to save will <b>perish</b> if you close this browser.<br>
         Please login or register to save your data permanently.
@@ -204,7 +204,7 @@ function renderEmptyState() {
   container.innerHTML = `
     <div class="empty-state">
       <h2>Let's Get Organized</h2>
-      <p>Start by creating a category for your links (like "Work", "Music", or "Dev").</p>
+      <p>Start by creating a category for your links (like "AI Tools", "Research sites", or "Dev").</p>
       
       <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto;">
         
