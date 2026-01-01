@@ -167,7 +167,6 @@ async function renderAllSections() {
 }
 
 // --- STATE RENDERERS ---
-
 function renderGuestState() {
   const container = document.querySelector('.container');
   const topBtn = document.getElementById("addNewSection");
@@ -207,15 +206,15 @@ function renderEmptyState() {
       <h2>Let's Get Organized</h2>
       <p>Start by creating a category for your links (like "Work", "Music", or "Dev").</p>
       
-      <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto;">
         
-        <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
-            <button class="btn-black" id="start-btn">Create First Section</button>
-            ${isGuest ? `<button class="btn-outline" id="empty-login-btn">Login</button>` : ''}
+        <div style="display: flex; gap: 10px; width: 100%; justify-content: center; flex-wrap: wrap;">
+            <button class="btn-black" id="start-btn" style="white-space: nowrap; flex: 1 1 auto; min-width: 160px;">Create First Section</button>
+            ${isGuest ? `<button class="btn-outline" id="empty-login-btn" style="flex: 1 1 auto; min-width: 80px;">Login</button>` : ''}
         </div>
 
         ${isGuest ? `
-            <button class="btn-outline" id="empty-register-btn" style="width: 100%; max-width: 300px;">
+            <button class="btn-outline" id="empty-register-btn" style="width: 100%;">
                 New User? Sign Up
             </button>
         ` : ''}
