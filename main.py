@@ -125,8 +125,6 @@ def create_db_and_tables():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    with engine.connect() as conn:
-        conn.exec_driver_sql("PRAGMA foreign_keys=ON")
     yield
 
 
