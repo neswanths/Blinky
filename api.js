@@ -59,20 +59,36 @@ const API = {
     return API.request("/users", "POST", { email, password });
   },
 
-  getSections: async () => {
+ getSections: async () => {
     if (!API.isLoggedIn()) return [];
     const domains = await API.request("/domains");
-    
     
     return domains.map(d => ({
       id: d.id,         
       title: d.name,     
-      links: d.bookmarks.map(b => ({
-        id: b.id,
-        url: b.url,
-        name: b.title,   
-        domain: new URL(b.url).hostname 
-      }))
+      links: d.bookmarks.map(b => {
+        // SAFE URL PARSING logic
+        let hostname = "unknown";
+        try {
+            // Try standard parsing
+            hostname = new URL(b.url).hostname;
+        } catch (e) {
+            // If it fails (likely missing https://), try adding it
+            try {
+                hostname = new URL("https://" + b.url).hostname;
+            } catch (e2) {
+                // If it still fails, just use the raw text
+                hostname = b.url;
+            }
+        }
+        
+        return {
+            id: b.id,
+            url: b.url,
+            name: b.title,   
+            domain: hostname 
+        };
+      })
     }));
   },
 
