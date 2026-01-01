@@ -198,28 +198,35 @@ function renderGuestState() {
 function renderEmptyState() {
   const container = document.querySelector('.container');
   
-  // 1. Prepare Buttons HTML
-  let buttonsHtml = `<button class="btn-black" id="start-btn">Create First Section</button>`;
-  
-  // NEW: If user is a Guest, add a Login button next to it
-  if (!API.isLoggedIn()) {
-    buttonsHtml += `<button class="btn-outline" id="empty-login-btn" style="margin-left: 10px;">Login</button>`;
-  }
+  // 1. Logic to determine if we show auth buttons
+  const isGuest = !API.isLoggedIn();
 
   // 2. Render UI
   container.innerHTML = `
     <div class="empty-state">
       <h2>Let's Get Organized</h2>
       <p>Start by creating a category for your links (like "Work", "Music", or "Dev").</p>
-      <div class="action-buttons">
-        ${buttonsHtml}
+      
+      <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+        
+        <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+            <button class="btn-black" id="start-btn">Create First Section</button>
+            ${isGuest ? `<button class="btn-outline" id="empty-login-btn">Login</button>` : ''}
+        </div>
+
+        ${isGuest ? `
+            <button class="btn-outline" id="empty-register-btn" style="width: 100%; max-width: 300px;">
+                New User? Sign Up
+            </button>
+        ` : ''}
+
       </div>
     </div>
   `;
 
   // 3. Event Listeners
 
-  // Action A: Create Section (The Guest Flow)
+  // Action A: Create Section (Guest Flow)
   document.getElementById("start-btn").addEventListener("click", () => {
     openModal({
       title: "New Section",
@@ -239,7 +246,7 @@ function renderEmptyState() {
               const url = urlValues["url-input"];
               if(!url) return false;
 
-              if (!API.isLoggedIn()) {
+              if (isGuest) {
                 localStorage.setItem("pending_section", sectionName);
                 localStorage.setItem("pending_url", url);
                 renderGuestState();
@@ -261,13 +268,22 @@ function renderEmptyState() {
     });
   });
 
-  // Action B: Login (The Returning User Flow)
-  const loginBtn = document.getElementById("empty-login-btn");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", () => {
-      // Trigger the existing login modal logic
-      document.getElementById("nav-login-btn").click();
-    });
+  // Action B: Login & Register Listeners
+  if (isGuest) {
+    const loginBtn = document.getElementById("empty-login-btn");
+    const regBtn = document.getElementById("empty-register-btn");
+
+    if (loginBtn) {
+      loginBtn.addEventListener("click", () => {
+        document.getElementById("nav-login-btn").click();
+      });
+    }
+
+    if (regBtn) {
+      regBtn.addEventListener("click", () => {
+        document.getElementById("nav-register-btn").click();
+      });
+    }
   }
 }
 
