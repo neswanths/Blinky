@@ -338,16 +338,19 @@ function setupAddUrlForm(btn, domainId, listElement) {
     form.append(input, submit);
     listElement.before(form);
     listElement.before(msg); 
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       let rawUrl = input.value.trim();
       if (!rawUrl) return;
+
+      // 1. Auto-fix: Add https if missing
       if (!rawUrl.match(/^https?:\/\//)) rawUrl = "https://" + rawUrl;
 
-      const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-      if (!urlRegex.test(rawUrl)) {
-        msg.textContent = "Invalid URL (ex: google.com)";
+      // 2. Validation: Use the browser's built-in parser (Faster & Safer)
+      try {
+        new URL(rawUrl); // If this fails, it jumps to catch()
+      } catch (err) {
+        msg.textContent = "Invalid URL";
         input.style.borderColor = "red";
         return;
       }
@@ -363,10 +366,12 @@ function setupAddUrlForm(btn, domainId, listElement) {
         form.remove();
         msg.remove();
       } catch (err) {
+        console.error(err);
         msg.textContent = "Error adding link.";
       }
     });
   });
+
 }
 
 function addUrlDOM(domainId, ulId, url, domain, name, bookmarkId) {
