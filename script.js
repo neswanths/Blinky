@@ -161,6 +161,7 @@ async function renderAllSections() {
       }
     });
   } catch (e) { 
+    console.error("CRITICAL RENDER ERROR:", e);
     renderEmptyState();
   }
 }
