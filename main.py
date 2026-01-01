@@ -105,10 +105,17 @@ class BookmarkResponse(BaseModel):
 
 
 # Database setup
-db_name = "blinky.db"
-db_url = f"sqlite:///{db_name}"
-connect_args = {"check_same_thread": False}
-engine = create_engine(db_url, connect_args=connect_args)
+# Database setup - PRODUCTION ONLY
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("CRITICAL ERROR: DATABASE_URL is missing. Production database required.")
+
+# Fix for SQLAlchemy: Railway provides 'postgres://', but SQLAlchemy needs 'postgresql://'
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(DATABASE_URL, echo=False)
 
 
 def create_db_and_tables():
@@ -126,12 +133,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # CORS
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost",
-        "http://127.0.0.1",
-        "https://neswanths.github.io"
+        "https://neswanths.github.io"  # Only allow your real frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
