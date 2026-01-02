@@ -1,4 +1,4 @@
-/* ---------- Black & White Professional Theme ---------- */
+/* ---------- Black & White Professional Theme (Restored & Fixed) ---------- */
 :root {
   --bg: #ffffff;         /* page background */
   --panel: #f6f6f6;      /* section background */
@@ -36,14 +36,13 @@ body::-webkit-scrollbar-thumb:hover {
   background: #bdbdbd;
 }
 
-/* ---------- Container & Layout ---------- */
+/* ---------- Container ---------- */
 .container {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap);
   align-items: stretch;
   padding: 12px;
-  min-height: 20px;
 }
 
 /* ---------- Box (Section) Styles ---------- */
@@ -56,10 +55,9 @@ body::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 8px 22px var(--shadow);
   display: flex;
   flex-direction: column;
-  padding: 14px;
+  padding: 14px; /* Original padding */
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   position: relative;
-  margin: 0; /* Reset duplicate margin */
 }
 
 .box:hover {
@@ -71,21 +69,14 @@ body::-webkit-scrollbar-thumb:hover {
   .box { width: calc(50% - 10px); }
 }
 
-/* ---------- Section Header (Hover Controls) ---------- */
+/* ---------- Section Header (Title + Icons) ---------- */
+/* This replaces the old h3 styling to allow side-by-side buttons */
 .domain-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 5px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.domain-header:hover {
-  background-color: #f9f9f9;
+  align-items: center; /* Perfect vertical alignment */
+  margin-bottom: 4px; /* TIGHT SPACING (Fixed the large gap) */
+  min-height: 24px;
 }
 
 .domain-header h3 {
@@ -93,90 +84,100 @@ body::-webkit-scrollbar-thumb:hover {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
+  line-height: 1.2;
   word-break: break-word;
 }
 
-/* Hide controls by default */
+/* The Controls Container */
 .domain-controls {
   display: flex;
-  gap: 8px;
-  margin-left: auto;
-  opacity: 0;
+  gap: 2px; /* Keep buttons close to each other */
+  margin-left: 8px; /* Small space between Title and Buttons */
+  flex-shrink: 0; /* Prevent buttons from squishing */
+  opacity: 0; /* Hidden by default */
   transition: opacity 0.2s ease-in-out;
 }
 
-/* Show controls on hover */
-.domain-header:hover .domain-controls {
+/* Show controls when hovering the BOX (easier to trigger) */
+.box:hover .domain-controls {
   opacity: 1;
 }
 
-/* Always show controls on touch devices */
+/* Always show on mobile */
 @media (hover: none) {
   .domain-controls { opacity: 1; }
 }
 
 /* ---------- Buttons & Icons ---------- */
-button {
+
+/* 1. Base Icon Button (Invisible bg until hover) */
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px; /* Matches original size */
+  padding: 4px;
+  border-radius: 4px;
+  color: #bbb; /* Subtle grey default */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+/* 2. Orange Edit Button (The new feature) */
+.edit-btn:hover {
+  background-color: #fff3e0;
+  color: #f57c00; /* Orange */
+  transform: scale(1.1);
+}
+
+/* 3. Red Delete Button */
+.deleteSectionBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px; /* Slightly larger X */
+  padding: 0 4px;
+  color: #bbb;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.deleteSectionBtn:hover {
+  background-color: transparent; /* Keep transparent like old version */
+  color: #d32f2f; /* Red */
+  transform: scale(1.1);
+}
+
+/* ---------- Add URL Button (Black Pill) ---------- */
+.add-url-btn {
   background: var(--accent);
   color: #fff;
   border: 1px solid var(--accent);
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   cursor: pointer;
   box-shadow: 0 6px 18px var(--shadow);
   transition: transform 0.12s ease, background 0.12s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  margin-bottom: 8px; /* TIGHT SPACING */
+  width: fit-content;
 }
 
-button:hover {
+.add-url-btn:hover {
   transform: translateY(-2px);
   background: #111;
   color: #fff;
 }
 
-/* Base Icon Button (Clear BG) */
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  box-shadow: none;
-  color: #888;
-  transition: all 0.2s ease;
-}
-
-/* Orange Edit Button */
-.edit-btn:hover {
-  background-color: #fff3e0;
-  color: #f57c00;
-  transform: scale(1.1);
-}
-
-/* Red Delete Button */
-.deleteSectionBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #888;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  box-shadow: none;
-}
-
-.deleteSectionBtn:hover {
-  background-color: #ffebee;
-  color: #d32f2f;
-  transform: scale(1.1);
-}
-
-/* ---------- Add New Section Area ---------- */
+/* ---------- Add New Section (Top Button) ---------- */
 #addNewSection > button {
   background: var(--accent);
   color: #fff;
@@ -204,13 +205,13 @@ button:hover {
   background: #111;
 }
 
+/* Inputs in Add Section */
 #addNewSection form {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
   align-items: center;
 }
-
 #addNewSection form input {
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -221,7 +222,6 @@ button:hover {
   outline: none;
   min-width: 160px;
 }
-
 #addNewSection form input:focus {
   box-shadow: 0 0 0 4px var(--focus-ring);
   border-color: var(--accent);
@@ -237,31 +237,31 @@ button:hover {
 }
 .box form input {
   width: 100%;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 .box form input:focus {
   box-shadow: 0 0 0 4px var(--focus-ring);
   border-color: var(--accent);
 }
 
-/* ---------- Lists & Links ---------- */
+/* ---------- Bookmarks List ---------- */
 .box ul {
-  margin-top: 8px;
-  padding-left: 0; /* Align left */
+  margin-top: 4px; /* TIGHT SPACING */
+  padding-left: 0;
   list-style: none;
-  min-height: 30px;
+  min-height: 20px;
 }
 
 li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 3px 0; /* Compact list items */
   transition: transform 0.15s ease;
 }
 
@@ -270,19 +270,23 @@ li {
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .link-content img {
   width: 16px;
   height: 16px;
   margin-right: 8px;
+  border-radius: 2px;
 }
 
 .link-content a {
   text-decoration: none;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .link-content a:hover {
   text-decoration: underline;
@@ -307,7 +311,7 @@ li:hover .link-actions {
   border-radius: 4px;
 }
 
-/* ---------- Auth Profile (Top Right) ---------- */
+/* ---------- Auth Profile ---------- */
 .auth-container {
   position: fixed;
   top: 12px;
@@ -349,13 +353,8 @@ li:hover .link-actions {
   top: 24px;
 }
 
-.user-logo.alert {
-  border: 2px solid #d32f2f;
-}
-
-.user-logo:hover {
-  transform: scale(1.06);
-}
+.user-logo.alert { border: 2px solid #d32f2f; }
+.user-logo:hover { transform: scale(1.06); }
 
 .auth-dropdown {
   position: absolute;
@@ -387,7 +386,6 @@ li:hover .link-actions {
   font-size: 0.9rem;
   margin-bottom: 6px;
 }
-
 .auth-dropdown button {
   width: 100%;
   justify-content: center;
@@ -417,7 +415,6 @@ li:hover .link-actions {
   max-width: 320px;
   text-align: center;
 }
-
 .modal-content h3 { margin-top: 0; color: var(--accent); }
 .modal-content p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
 
@@ -437,7 +434,7 @@ li:hover .link-actions {
 .btn-primary { background: var(--accent); color: #fff; border: none; flex: 1; justify-content: center; }
 .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); flex: 1; box-shadow: none; justify-content: center; }
 
-/* ---------- Empty & Guest States ---------- */
+/* ---------- Empty States ---------- */
 .empty-state, .guest-state {
   width: 100%;
   display: flex;
@@ -448,7 +445,6 @@ li:hover .link-actions {
   text-align: center;
   animation: fadeIn 0.5s ease;
 }
-
 .guest-state h2 { color: #d32f2f; }
 .empty-state h2 { color: var(--text); }
 
@@ -457,7 +453,6 @@ li:hover .link-actions {
   gap: 16px;
   margin-top: 10px;
 }
-
 .btn-black {
   background: #000;
   color: #fff;
