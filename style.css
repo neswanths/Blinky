@@ -1,4 +1,4 @@
-/* ---------- Black & White Professional Theme (Restored & Fixed) ---------- */
+/* ---------- Black & White Professional Theme (COMPACT RESTORED) ---------- */
 :root {
   --bg: #ffffff;         /* page background */
   --panel: #f6f6f6;      /* section background */
@@ -14,29 +14,21 @@
   --fs: 1rem;
 }
 
-/* Page */
+/* Page Setup */
 body {
   background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   margin: 0;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-body::-webkit-scrollbar {
-  width: 10px;
-  background: transparent;
-}
-body::-webkit-scrollbar-thumb {
-  background: #cfcfcf;
-  border-radius: 8px;
-}
-body::-webkit-scrollbar-thumb:hover {
-  background: #bdbdbd;
-}
+/* Scrollbar */
+body::-webkit-scrollbar { width: 10px; background: transparent; }
+body::-webkit-scrollbar-thumb { background: #cfcfcf; border-radius: 8px; }
+body::-webkit-scrollbar-thumb:hover { background: #bdbdbd; }
 
-/* ---------- Container ---------- */
+/* ---------- Layout ---------- */
 .container {
   display: flex;
   flex-wrap: wrap;
@@ -45,17 +37,17 @@ body::-webkit-scrollbar-thumb:hover {
   padding: 12px;
 }
 
-/* ---------- Box (Section) Styles ---------- */
+/* ---------- Box (Card) Styles - RESTORED COMPACT SIZE ---------- */
 .box {
   background: var(--card);
   color: var(--text);
-  width: 170px;
+  width: 170px; /* Original fixed width */
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: 0 8px 22px var(--shadow);
   display: flex;
   flex-direction: column;
-  padding: 14px; /* Original padding */
+  padding: 10px; /* TIGHT PADDING RESTORED */
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   position: relative;
 }
@@ -69,13 +61,13 @@ body::-webkit-scrollbar-thumb:hover {
   .box { width: calc(50% - 10px); }
 }
 
-/* ---------- Section Header (Title + Icons) ---------- */
-/* This replaces the old h3 styling to allow side-by-side buttons */
+/* ---------- Header (Title + Icons) ---------- */
+/* This is the key fix for "Same Level" alignment */
 .domain-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center; /* Perfect vertical alignment */
-  margin-bottom: 4px; /* TIGHT SPACING (Fixed the large gap) */
+  justify-content: space-between; /* Title Left, Buttons Right */
+  align-items: center; /* Perfect Vertical Alignment */
+  margin-bottom: 6px; /* Tiny gap before the "Add URL" button */
   min-height: 24px;
 }
 
@@ -84,100 +76,78 @@ body::-webkit-scrollbar-thumb:hover {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1;
   word-break: break-word;
 }
 
-/* The Controls Container */
+/* The Controls (Edit + Delete) */
 .domain-controls {
   display: flex;
-  gap: 2px; /* Keep buttons close to each other */
-  margin-left: 8px; /* Small space between Title and Buttons */
-  flex-shrink: 0; /* Prevent buttons from squishing */
+  gap: 4px; /* Space between Pencil and X */
   opacity: 0; /* Hidden by default */
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s;
 }
 
-/* Show controls when hovering the BOX (easier to trigger) */
-.box:hover .domain-controls {
-  opacity: 1;
-}
-
-/* Always show on mobile */
-@media (hover: none) {
-  .domain-controls { opacity: 1; }
-}
+/* Show controls on hover */
+.box:hover .domain-controls { opacity: 1; }
+@media (hover: none) { .domain-controls { opacity: 1; } }
 
 /* ---------- Buttons & Icons ---------- */
-
-/* 1. Base Icon Button (Invisible bg until hover) */
+/* Orange Edit Button */
 .icon-btn {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 14px; /* Matches original size */
-  padding: 4px;
+  padding: 2px;
+  font-size: 14px;
+  color: #ccc;
   border-radius: 4px;
-  color: #bbb; /* Subtle grey default */
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: none;
 }
-
-/* 2. Orange Edit Button (The new feature) */
 .edit-btn:hover {
   background-color: #fff3e0;
-  color: #f57c00; /* Orange */
+  color: #f57c00; /* ORANGE */
   transform: scale(1.1);
 }
 
-/* 3. Red Delete Button */
+/* Red Delete Button */
 .deleteSectionBtn {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px; /* Slightly larger X */
-  padding: 0 4px;
-  color: #bbb;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  font-size: 18px;
+  padding: 0;
+  color: #ccc;
   line-height: 1;
-  box-shadow: none;
+  transition: all 0.2s;
 }
-
 .deleteSectionBtn:hover {
-  background-color: transparent; /* Keep transparent like old version */
-  color: #d32f2f; /* Red */
+  color: #d32f2f; /* RED */
   transform: scale(1.1);
 }
 
-/* ---------- Add URL Button (Black Pill) ---------- */
+/* ---------- Add URL Button ---------- */
 .add-url-btn {
   background: var(--accent);
   color: #fff;
   border: 1px solid var(--accent);
   border-radius: 8px;
-  padding: 4px 8px;
+  padding: 4px 10px;
   cursor: pointer;
   box-shadow: 0 6px 18px var(--shadow);
   transition: transform 0.12s ease, background 0.12s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   font-size: 0.85rem;
-  margin-bottom: 8px; /* TIGHT SPACING */
   width: fit-content;
+  margin-bottom: 8px;
 }
-
 .add-url-btn:hover {
   transform: translateY(-2px);
   background: #111;
-  color: #fff;
 }
 
-/* ---------- Add New Section (Top Button) ---------- */
+/* ---------- "New Section" Top Button ---------- */
 #addNewSection > button {
   background: var(--accent);
   color: #fff;
@@ -186,16 +156,17 @@ body::-webkit-scrollbar-thumb:hover {
   padding: 8px 14px;
   cursor: pointer;
   box-shadow: 0 6px 18px var(--shadow);
-  transition: transform 0.12s ease, background 0.12s ease;
-  font-size: var(--fs);
+  transition: transform 0.12s ease;
+  font-size: 0; /* Hide default text */
   margin-bottom: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
 }
 
+/* RESTORED: "New section" text */
 #addNewSection > button::before {
-  content: "Add";
+  content: "New section";
+  font-size: 1rem;
   font-weight: 600;
   color: inherit;
 }
@@ -205,53 +176,34 @@ body::-webkit-scrollbar-thumb:hover {
   background: #111;
 }
 
-/* Inputs in Add Section */
-#addNewSection form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  align-items: center;
-}
-#addNewSection form input {
+/* ---------- Inputs ---------- */
+#addNewSection form input,
+.box form input {
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
-  padding: 8px 10px;
-  font-size: var(--fs);
+  padding: 6px 8px;
+  font-size: 0.9rem;
   outline: none;
-  min-width: 160px;
 }
-#addNewSection form input:focus {
+#addNewSection form input:focus,
+.box form input:focus {
   box-shadow: 0 0 0 4px var(--focus-ring);
   border-color: var(--accent);
   background: #fff;
 }
 
-/* ---------- Forms Inside Box ---------- */
+#addNewSection form {
+  display: flex; gap: 8px; margin-bottom: 12px; align-items: center;
+}
 .box form {
-  margin-bottom: 6px;
-  padding: 0;
-  display: flex;
-  gap: 6px;
-}
-.box form input {
-  width: 100%;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-  font-size: 0.9rem;
-}
-.box form input:focus {
-  box-shadow: 0 0 0 4px var(--focus-ring);
-  border-color: var(--accent);
+  margin-bottom: 6px; padding: 0; display: flex; gap: 6px;
 }
 
 /* ---------- Bookmarks List ---------- */
 .box ul {
-  margin-top: 4px; /* TIGHT SPACING */
+  margin-top: 4px;
   padding-left: 0;
   list-style: none;
   min-height: 20px;
@@ -261,7 +213,7 @@ li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 0; /* Compact list items */
+  padding: 3px 0;
   transition: transform 0.15s ease;
 }
 
@@ -272,212 +224,60 @@ li {
   overflow: hidden;
   margin-right: 6px;
 }
-
-.link-content img {
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
+.link-content img { width: 16px; height: 16px; margin-right: 8px; border-radius: 2px; }
 .link-content a {
-  text-decoration: none;
-  color: var(--text);
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-decoration: none; color: var(--text); font-size: 0.9rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.link-content a:hover {
-  text-decoration: underline;
-  color: var(--accent);
-}
+.link-content a:hover { text-decoration: underline; color: var(--accent); }
 
-.link-actions {
-  display: flex;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-li:hover .link-actions {
-  opacity: 1;
-}
+.link-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+li:hover .link-actions { opacity: 1; }
 
-.edit-input {
-  width: 100%;
-  padding: 4px;
-  font-size: 0.95rem;
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-}
+.edit-input { width: 100%; padding: 4px; font-size: 0.95rem; border: 1px solid var(--accent); border-radius: 4px; }
 
 /* ---------- Auth Profile ---------- */
-.auth-container {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 100;
-  padding-bottom: 15px;
-}
-
+.auth-container { position: fixed; top: 12px; right: 12px; z-index: 100; padding-bottom: 15px; }
 .user-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   background: linear-gradient(135deg, #f3f3f3, #dcdcdc);
   border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 3px 10px var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 3px 10px var(--shadow);
   transition: transform 0.15s ease;
 }
-
-.user-logo::before {
-  content: "";
-  width: 14px;
-  height: 14px;
-  background: var(--muted);
-  border-radius: 50%;
-  position: relative;
-  top: -5px;
-}
-.user-logo::after {
-  content: "";
-  width: 22px;
-  height: 10px;
-  background: var(--muted);
-  border-radius: 50% 50% 40% 40%;
-  position: absolute;
-  top: 24px;
-}
-
+.user-logo::before { content: ""; width: 14px; height: 14px; background: var(--muted); border-radius: 50%; position: relative; top: -5px; }
+.user-logo::after { content: ""; width: 22px; height: 10px; background: var(--muted); border-radius: 50% 50% 40% 40%; position: absolute; top: 24px; }
 .user-logo.alert { border: 2px solid #d32f2f; }
 .user-logo:hover { transform: scale(1.06); }
 
 .auth-dropdown {
-  position: absolute;
-  top: 60px;
-  right: 0;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  opacity: 0;
-  visibility: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 6px 20px var(--shadow);
-  padding: 10px;
-  min-width: 180px;
-  transition: all 0.2s ease;
-  pointer-events: none;
+  position: absolute; top: 60px; right: 0;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  opacity: 0; visibility: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 6px 20px var(--shadow); padding: 10px; min-width: 180px;
+  transition: all 0.2s ease; pointer-events: none;
 }
-
-.auth-container:hover .auth-dropdown {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.auth-dropdown span {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-}
-.auth-dropdown button {
-  width: 100%;
-  justify-content: center;
-  margin-top: 6px;
-}
+.auth-container:hover .auth-dropdown { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+.auth-dropdown span { color: var(--muted); font-size: 0.9rem; margin-bottom: 6px; }
+.auth-dropdown button { width: 100%; justify-content: center; margin-top: 6px; }
 
 /* ---------- Modals ---------- */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(2px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 1000; }
 .modal-overlay.active { display: flex; }
-
-.modal-content {
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-  padding: 24px;
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
-}
+.modal-content { background: var(--card); border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.15); padding: 24px; border-radius: var(--radius); width: 100%; max-width: 320px; text-align: center; }
 .modal-content h3 { margin-top: 0; color: var(--accent); }
-.modal-content p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
-
-.modal-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--panel);
-  box-sizing: border-box;
-}
-.modal-input.error { border-color: red; }
-.input-error-msg { color: red; font-size: 0.8rem; text-align: left; margin-top: -8px; margin-bottom: 10px; display: none; }
-
+.modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); box-sizing: border-box; }
 .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
 .btn-primary { background: var(--accent); color: #fff; border: none; flex: 1; justify-content: center; }
-.btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); flex: 1; box-shadow: none; justify-content: center; }
+.btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); flex: 1; justify-content: center; }
 
 /* ---------- Empty States ---------- */
-.empty-state, .guest-state {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  text-align: center;
-  animation: fadeIn 0.5s ease;
-}
+.empty-state, .guest-state { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; animation: fadeIn 0.5s ease; }
 .guest-state h2 { color: #d32f2f; }
-.empty-state h2 { color: var(--text); }
-
-.action-buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 10px;
-}
-.btn-black {
-  background: #000;
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.2s;
-}
+.action-buttons { display: flex; gap: 16px; margin-top: 10px; }
+.btn-black { background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; transition: transform 0.2s; }
 .btn-black:hover { transform: scale(1.05); }
-
-.btn-outline {
-  background: #fff;
-  color: #000;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid #000;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.2s, background 0.2s;
-}
+.btn-outline { background: #fff; color: #000; padding: 12px 24px; border-radius: 8px; border: 1px solid #000; cursor: pointer; transition: transform 0.2s; }
 .btn-outline:hover { transform: scale(1.05); background: #f9f9f9; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
