@@ -38,25 +38,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     navRegisterBtn.style.display = "none";
     navLogoutBtn.style.display = "block";
     if(newDomainContainer) newDomainContainer.style.display = "block";
+
+    // --- HOVER TOOLTIP ---
+    try {
+        const user = await API.request("/users/me");
+        if (user && user.email) {
+            logo.title = `Logged in as: ${user.email}`;
+            authStatus.textContent = "Hi, " + user.email.split('@')[0];
+        }
+    } catch(e) { console.warn("Could not fetch user info"); }
+
   } else {
     logo.classList.add("alert");
     authStatus.textContent = "Not logged in";
     if(newDomainContainer) newDomainContainer.style.display = "none";
+    logo.title = "Guest Mode";
 
-    // NEW: Check for First Time Visitor
     const hasSeenWelcome = localStorage.getItem("blinky_welcome_shown");
     if (!hasSeenWelcome) {
       setTimeout(() => {
         openModal({
           title: "Welcome to Blinky",
           desc: "The minimalist bookmark manager designed for focus.<br><br>Organize your links into sections without the clutter. Try it out as a guest, then sign in to sync.",
-          btnText: "Get Started", // Custom button text
+          btnText: "Get Started",
           onConfirm: () => {
             localStorage.setItem("blinky_welcome_shown", "true");
             return true;
           }
         });
-      }, 500); // Small delay for smooth entrance
+      }, 500);
     }
   }
 
@@ -88,14 +98,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   navRegisterBtn.addEventListener("click", () => {
     openModal({
       title: "Sign Up",
-      desc: "Create a minimal account. To get started.",
+      desc: "Create a minimal account. No spam, ever.",
       btnText: "Create Account",
       inputs: [
         { type: "email", placeholder: "Email Address", id: "reg-email" },
         { type: "password", placeholder: "Choose Password", id: "reg-pass" }
       ],
       onConfirm: async (values) => {
-        if(values["reg-pass"].length < 8) {
+        if(values["reg-pass"].length < 4) {
           showError("reg-pass", "Password is too short");
           return false; 
         }
@@ -167,6 +177,7 @@ async function renderAllSections() {
 }
 
 // --- STATE RENDERERS ---
+
 function renderGuestState() {
   const container = document.querySelector('.container');
   const topBtn = document.getElementById("addNewSection");
@@ -177,8 +188,8 @@ function renderGuestState() {
 
   container.innerHTML = `
     <div class="guest-state">
-      <h2>⚠️ You are currently browsing as a guest.</h2>
-      <p>Sync is Paused</p>
+      <h2>⚠️ Sync is Paused</h2>
+      <p>You are currently browsing as a guest.</p>
       <p style="color: var(--muted); margin-bottom: 24px; font-size: 0.9rem;">
         Any bookmarks you try to save will <b>perish</b> if you close this browser.<br>
         Please login or register to save your data permanently.
@@ -196,15 +207,12 @@ function renderGuestState() {
 
 function renderEmptyState() {
   const container = document.querySelector('.container');
-  
-  // 1. Logic to determine if we show auth buttons
   const isGuest = !API.isLoggedIn();
 
-  // 2. Render UI
   container.innerHTML = `
     <div class="empty-state">
       <h2>Let's Get Organized</h2>
-      <p>Start by creating a category for your links (like "AI Tools", "Research sites", or "Dev").</p>
+      <p>Start by creating a category for your links (like "Work", "Music", or "Dev").</p>
       
       <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto;">
         
@@ -223,9 +231,6 @@ function renderEmptyState() {
     </div>
   `;
 
-  // 3. Event Listeners
-
-  // Action A: Create Section (Guest Flow)
   document.getElementById("start-btn").addEventListener("click", () => {
     openModal({
       title: "New Section",
@@ -267,26 +272,16 @@ function renderEmptyState() {
     });
   });
 
-  // Action B: Login & Register Listeners
   if (isGuest) {
     const loginBtn = document.getElementById("empty-login-btn");
     const regBtn = document.getElementById("empty-register-btn");
 
-    if (loginBtn) {
-      loginBtn.addEventListener("click", () => {
-        document.getElementById("nav-login-btn").click();
-      });
-    }
-
-    if (regBtn) {
-      regBtn.addEventListener("click", () => {
-        document.getElementById("nav-register-btn").click();
-      });
-    }
+    if (loginBtn) loginBtn.onclick = () => document.getElementById("nav-login-btn").click();
+    if (regBtn) regBtn.onclick = () => document.getElementById("nav-register-btn").click();
   }
 }
 
-// --- DOM CREATION ---
+// --- DOM CREATION (MOBILE RESPONSIVE UPDATED) ---
 
 function createSectionDOM(title, id) {
   const container = document.querySelector(".container");
@@ -300,20 +295,69 @@ function createSectionDOM(title, id) {
   box.className = "box";
   box.id = `domain-${id}`;
 
+  // RESPONSIVE HEADER: flex-wrap allows title and buttons to stack on tiny screens
+  const headerDiv = document.createElement("div");
+  headerDiv.style.display = "flex";
+  headerDiv.style.justifyContent = "space-between";
+  headerDiv.style.alignItems = "center";
+  headerDiv.style.marginBottom = "15px";
+  headerDiv.style.flexWrap = "wrap"; // <--- RESPONSIVE FIX
+  headerDiv.style.gap = "10px";      // <--- RESPONSIVE FIX
+
   const h3 = document.createElement("h3");
   h3.textContent = title;
-  
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "add url";
-  addBtn.className = "add-url-btn"; 
-  addBtn.style.marginBottom = "10px";
-  
-  const ul = document.createElement("ul");
-  ul.id = `${id}List`;
+  h3.style.margin = "0";
+  h3.style.wordBreak = "break-word"; // Prevent long words from breaking layout
+
+  const controlsDiv = document.createElement("div");
+  controlsDiv.style.display = "flex";
+  controlsDiv.style.gap = "8px";
+  controlsDiv.style.marginLeft = "auto"; // Push controls to right even when wrapped
+
+  // EDIT BUTTON
+  const editBtn = document.createElement("button");
+  editBtn.className = "icon-btn"; 
+  editBtn.innerHTML = "&#9998;"; 
+  editBtn.style.color = "#888";
+  editBtn.title = "Rename Section";
+
+  editBtn.addEventListener("click", () => {
+    if (headerDiv.querySelector("input")) return;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = h3.textContent;
+    input.className = "edit-input";
+    input.style.fontSize = "1.1rem"; 
+    input.style.fontWeight = "bold";
+    input.style.flex = "1"; // Allow input to fill space
+    input.style.minWidth = "150px"; 
+    
+    h3.style.display = "none";
+    headerDiv.insertBefore(input, h3);
+    input.focus();
+
+    const saveRename = async () => {
+        const newName = input.value.trim();
+        if (newName && newName !== title) {
+            try {
+                await API.request(`/domains/${id}?new_name=${encodeURIComponent(newName)}`, "PUT");
+                h3.textContent = newName;
+                title = newName;
+            } catch (e) { alert("Could not rename section"); }
+        }
+        input.remove();
+        h3.style.display = "block";
+    };
+
+    input.addEventListener("keydown", (e) => { if(e.key === "Enter") saveRename(); });
+    input.addEventListener("blur", saveRename);
+  });
 
   const deleteBtn = document.createElement("button");
-  deleteBtn.className = "deleteSectionBtn";
+  deleteBtn.className = "deleteSectionBtn"; 
   deleteBtn.innerHTML = "&times;";
+  deleteBtn.style.position = "static"; 
   
   deleteBtn.addEventListener("click", () => {
     openModal({
@@ -328,7 +372,18 @@ function createSectionDOM(title, id) {
     });
   });
 
-  box.append(h3, deleteBtn, addBtn, ul);
+  controlsDiv.append(editBtn, deleteBtn);
+  headerDiv.append(h3, controlsDiv);
+
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "add url";
+  addBtn.className = "add-url-btn"; 
+  addBtn.style.marginBottom = "10px";
+  
+  const ul = document.createElement("ul");
+  ul.id = `${id}List`;
+
+  box.append(headerDiv, addBtn, ul);
   container.appendChild(box);
   setupAddUrlForm(addBtn, id, ul);
 }
@@ -338,12 +393,20 @@ function setupAddUrlForm(btn, domainId, listElement) {
     if (listElement.parentElement.querySelector("form")) return;
 
     const form = document.createElement("form");
+    // RESPONSIVE FORM: Use flexbox instead of fixed width
+    form.style.display = "flex";
+    form.style.gap = "8px";
+    form.style.alignItems = "center";
+    
     const input = document.createElement("input");
     input.placeholder = "google.com";
-    input.style.width = "70%";
+    input.style.flex = "1";     // <--- RESPONSIVE FIX (Takes available space)
+    input.style.width = "auto"; // <--- RESPONSIVE FIX (Resets fixed width)
+    input.style.minWidth = "0"; // <--- RESPONSIVE FIX (Prevents overflow)
     
     const submit = document.createElement("button");
     submit.textContent = "Add";
+    submit.style.flex = "0 0 auto"; // Prevent button from squishing
 
     const msg = document.createElement("div");
     msg.style.fontSize = "0.8rem"; 
@@ -358,12 +421,10 @@ function setupAddUrlForm(btn, domainId, listElement) {
       let rawUrl = input.value.trim();
       if (!rawUrl) return;
 
-      // 1. Auto-fix: Add https if missing
       if (!rawUrl.match(/^https?:\/\//)) rawUrl = "https://" + rawUrl;
 
-      // 2. Validation: Use the browser's built-in parser (Faster & Safer)
       try {
-        new URL(rawUrl); // If this fails, it jumps to catch()
+        new URL(rawUrl); 
       } catch (err) {
         msg.textContent = "Invalid URL";
         input.style.borderColor = "red";
@@ -386,7 +447,6 @@ function setupAddUrlForm(btn, domainId, listElement) {
       }
     });
   });
-
 }
 
 function addUrlDOM(domainId, ulId, url, domain, name, bookmarkId) {
@@ -460,7 +520,7 @@ function addUrlDOM(domainId, ulId, url, domain, name, bookmarkId) {
   ul.appendChild(li);
 }
 
-// --- UPDATED MODAL SYSTEM (with btnText support) ---
+// --- MODAL SYSTEM ---
 function openModal({ title, desc, inputs = [], btnText = "Confirm", onConfirm }) {
   const modal = document.getElementById("app-modal");
   const modalTitle = document.getElementById("modal-title");
@@ -474,7 +534,7 @@ function openModal({ title, desc, inputs = [], btnText = "Confirm", onConfirm })
   
   modalTitle.textContent = title;
   modalDesc.innerHTML = desc; 
-  confirmBtn.textContent = btnText; // NEW: Custom Button Text
+  confirmBtn.textContent = btnText;
 
   const inputRefs = {};
   inputs.forEach(opt => {
