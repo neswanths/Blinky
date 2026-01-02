@@ -1,5 +1,6 @@
-/* ---------- Black & White Professional Theme (COMPACT RESTORED) ---------- */
-:root {
+/* ---------- Black & White Professional Theme (ORIGINAL RESTORED) ---------- */
+/* Easy variables for quick tweaks */
+:root{
   --bg: #ffffff;         /* page background */
   --panel: #f6f6f6;      /* section background */
   --card: #ffffff;       /* card background */
@@ -14,141 +15,18 @@
   --fs: 1rem;
 }
 
-/* Page Setup */
-body {
+/* Page */
+body{
   background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   margin: 0;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-/* Scrollbar */
-body::-webkit-scrollbar { width: 10px; background: transparent; }
-body::-webkit-scrollbar-thumb { background: #cfcfcf; border-radius: 8px; }
-body::-webkit-scrollbar-thumb:hover { background: #bdbdbd; }
-
-/* ---------- Layout ---------- */
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  align-items: stretch;
-  padding: 12px;
-}
-
-/* ---------- Box (Card) Styles - RESTORED COMPACT SIZE ---------- */
-.box {
-  background: var(--card);
-  color: var(--text);
-  width: 170px; /* Original fixed width */
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 22px var(--shadow);
-  display: flex;
-  flex-direction: column;
-  padding: 10px; /* TIGHT PADDING RESTORED */
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-  position: relative;
-}
-
-.box:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(16,16,16,0.08);
-}
-
-@media (max-width: 520px) {
-  .box { width: calc(50% - 10px); }
-}
-
-/* ---------- Header (Title + Icons) ---------- */
-/* This is the key fix for "Same Level" alignment */
-.domain-header {
-  display: flex;
-  justify-content: space-between; /* Title Left, Buttons Right */
-  align-items: center; /* Perfect Vertical Alignment */
-  margin-bottom: 6px; /* Tiny gap before the "Add URL" button */
-  min-height: 24px;
-}
-
-.domain-header h3 {
-  color: var(--accent);
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1;
-  word-break: break-word;
-}
-
-/* The Controls (Edit + Delete) */
-.domain-controls {
-  display: flex;
-  gap: 4px; /* Space between Pencil and X */
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.2s;
-}
-
-/* Show controls on hover */
-.box:hover .domain-controls { opacity: 1; }
-@media (hover: none) { .domain-controls { opacity: 1; } }
-
-/* ---------- Buttons & Icons ---------- */
-/* Orange Edit Button */
-.icon-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 2px;
-  font-size: 14px;
-  color: #ccc;
-  border-radius: 4px;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-}
-.edit-btn:hover {
-  background-color: #fff3e0;
-  color: #f57c00; /* ORANGE */
-  transform: scale(1.1);
-}
-
-/* Red Delete Button */
-.deleteSectionBtn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 0;
-  color: #ccc;
-  line-height: 1;
-  transition: all 0.2s;
-}
-.deleteSectionBtn:hover {
-  color: #d32f2f; /* RED */
-  transform: scale(1.1);
-}
-
-/* ---------- Add URL Button ---------- */
-.add-url-btn {
-  background: var(--accent);
-  color: #fff;
-  border: 1px solid var(--accent);
-  border-radius: 8px;
-  padding: 4px 10px;
-  cursor: pointer;
-  box-shadow: 0 6px 18px var(--shadow);
-  transition: transform 0.12s ease, background 0.12s ease;
-  font-size: 0.85rem;
-  width: fit-content;
-  margin-bottom: 8px;
-}
-.add-url-btn:hover {
-  transform: translateY(-2px);
-  background: #111;
-}
-
-/* ---------- "New Section" Top Button ---------- */
-#addNewSection > button {
+/* Add section button (keeps same selector) */
+#addNewSection > button{
   background: var(--accent);
   color: #fff;
   border: 1px solid var(--accent);
@@ -156,128 +34,635 @@ body::-webkit-scrollbar-thumb:hover { background: #bdbdbd; }
   padding: 8px 14px;
   cursor: pointer;
   box-shadow: 0 6px 18px var(--shadow);
-  transition: transform 0.12s ease;
-  font-size: 0; /* Hide default text */
+  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+  font-size: var(--fs);
   margin-bottom: 12px;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
 }
 
-/* RESTORED: "New section" text */
-#addNewSection > button::before {
-  content: "New section";
-  font-size: 1rem;
+/* replace symbol with plain text for clarity */
+#addNewSection > button::before{
+  content: "Add";
   font-weight: 600;
   color: inherit;
+  margin-right: 6px;
+  font-size: 0.95em;
 }
 
-#addNewSection > button:hover {
+#addNewSection > button:hover{
   transform: translateY(-2px);
   background: #111;
+  color: #fff;
 }
 
-/* ---------- Inputs ---------- */
-#addNewSection form input,
-.box form input {
+/* Form inside addNewSection */
+#addNewSection form{
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0;
+  align-items: center;
+}
+#addNewSection form input{
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
-  padding: 6px 8px;
-  font-size: 0.9rem;
+  padding: 8px 10px;
+  font-size: var(--fs);
   outline: none;
+  min-width: 160px;
 }
-#addNewSection form input:focus,
-.box form input:focus {
+#addNewSection form input:focus{
   box-shadow: 0 0 0 4px var(--focus-ring);
   border-color: var(--accent);
   background: #fff;
 }
 
-#addNewSection form {
-  display: flex; gap: 8px; margin-bottom: 12px; align-items: center;
-}
-.box form {
-  margin-bottom: 6px; padding: 0; display: flex; gap: 6px;
+
+#addNewSection > button {
+  font-size: 0;          
+  line-height: 1;
+  position: relative;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px var(--shadow);
+  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ---------- Bookmarks List ---------- */
-.box ul {
-  margin-top: 4px;
-  padding-left: 0;
-  list-style: none;
+
+#addNewSection > button::before {
+  content: "New section";
+  font-size: var(--fs);  
+  font-weight: 600;
+  display: inline-block;
+  color: inherit;
+  margin: 0;
+}
+
+
+#addNewSection > button:hover {
+  transform: translateY(-2px);
+  background: #111;
+  color: #fff;
+}
+
+
+input:focus{
+  box-shadow: 0 0 0 4px var(--focus-ring);
+  border-color: var(--accent);
+}
+
+
+body::-webkit-scrollbar{
+  width: 10px;
+  background: transparent;
+}
+body::-webkit-scrollbar-thumb{
+  background: #cfcfcf;
+  border-radius: 8px;
+}
+body::-webkit-scrollbar-thumb:hover{
+  background: #bdbdbd;
+}
+
+
+.container{
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  align-items: stretch;
+  padding: 12px;
+}
+
+.box{
+  background: var(--card);
+  color: var(--text);
+  width: 170px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 22px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  position: relative; /* ensure relative for delete button absolute */
+}
+
+.box:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(16,16,16,0.08);
+}
+
+
+button{
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px var(--shadow);
+  transition: transform 0.12s ease, background 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+button::before{
+  content: none;
+}
+
+button:hover{
+  transform: translateY(-2px);
+  background: #111;
+  color: #fff;
+}
+
+.box a{
+  color: var(--accent);
+  text-decoration: underline;
+  word-break: break-word;
+}
+.box h3{
+  color: var(--accent);
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+
+.box form input{
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.box form{
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+
+.box ul{
+  margin-top: 8px;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.box ul li img{
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+
+@media (max-width: 520px){
+  .box{ width: calc(50% - 10px); }
+  #addNewSection form input{ min-width: 120px; }
+}
+
+
+.box {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 10px;
+  border-radius: 8px;
+}
+
+/* Old Delete Section Button Style */
+.deleteSectionBtn {
+  display: none;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: red;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  box-shadow: none; /* remove default button shadow */
+}
+
+.box:hover .deleteSectionBtn {
+  display: block;
+}
+
+.deleteSectionBtn:hover {
+  color: darkred;
+  transform: scale(1.1);
+  background: transparent;
+}
+
+
+ul, .container {
   min-height: 20px;
 }
 
 li {
+  transition: transform 0.15s ease;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 3px 0;
-  transition: transform 0.15s ease;
+  justify-content: space-between; /* space between text and buttons */
+}
+li, .box {
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+ul {
+  min-height: 30px; /* Allow dropping in empty lists */
+}
+
+/* ---------- Auth Profile Styling ---------- */
+.auth-container {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  font-family: inherit;
+  padding-bottom: 15px; /* Invisible bridge for hover */
+}
+
+/* Profile icon — default gray face like Instagram */
+.user-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f3f3f3, #dcdcdc);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.2s ease;
+  position: relative;
+}
+
+/* Placeholder face */
+.user-logo::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: var(--muted);
+  border-radius: 50%;
+  position: relative;
+  top: -5px;
+}
+.user-logo::after {
+  content: "";
+  width: 22px;
+  height: 10px;
+  background: var(--muted);
+  border-radius: 50% 50% 40% 40%;
+  position: absolute;
+  top: 24px;
+}
+
+/* When not logged in — red glowing border */
+.user-logo.alert {
+  border: 2px solid red;
+  box-shadow: none;
+}
+
+/* Hover animation */
+.user-logo:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, #e8e8e8, #f6f6f6);
+}
+
+/* Dropdown */
+.auth-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  /* Use Opacity/Visibility for Hover Effect instead of Display */
+  opacity: 0;
+  visibility: hidden;
+  display: flex; /* Always flex layout, just hidden */
+  flex-direction: column;
+  box-shadow: 0 6px 20px var(--shadow);
+  padding: 10px;
+  min-width: 180px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+/* HOVER LOGIC: Show dropdown when container is hovered */
+.auth-container:hover .auth-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.auth-dropdown span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.auth-dropdown button {
+  margin-top: 6px;
+  padding: 7px 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 0.9rem;
+  justify-content: center;
+}
+.auth-dropdown button:hover {
+  background: #111;
+}
+
+/* =========================================
+   NEW FUNCTIONALITY SUPPORT 
+   (Minimal styles to make Modals & Edit work 
+   within the old theme)
+   ========================================= */
+
+/* 1. Modal System */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255, 255, 255, 0.85); /* Light blur overlay */
+  backdrop-filter: blur(2px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  padding: 24px;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+.modal-content h3 { margin-top: 0; color: var(--accent); }
+.modal-content p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  box-sizing: border-box;
+}
+.modal-input.error { border-color: red; }
+.input-error-msg { color: red; font-size: 0.8rem; text-align: left; margin-top: -8px; margin-bottom: 10px; display: none; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+.btn-primary { background: var(--accent); color: #fff; border: none; flex: 1; justify-content: center; }
+.btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); flex: 1; box-shadow: none; justify-content: center; }
+
+
+/* 2. Link Actions (Edit Pencil) */
 .link-content {
   display: flex;
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
-  margin-right: 6px;
+  margin-right: 8px;
 }
-.link-content img { width: 16px; height: 16px; margin-right: 8px; border-radius: 2px; }
 .link-content a {
-  text-decoration: none; color: var(--text); font-size: 0.9rem;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.95rem;
 }
 .link-content a:hover { text-decoration: underline; color: var(--accent); }
 
-.link-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+.link-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
 li:hover .link-actions { opacity: 1; }
 
-.edit-input { width: 100%; padding: 4px; font-size: 0.95rem; border: 1px solid var(--accent); border-radius: 4px; }
-
-/* ---------- Auth Profile ---------- */
-.auth-container { position: fixed; top: 12px; right: 12px; z-index: 100; padding-bottom: 15px; }
-.user-logo {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, #f3f3f3, #dcdcdc);
-  border: 2px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 3px 10px var(--shadow);
-  transition: transform 0.15s ease;
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  box-shadow: none;
 }
-.user-logo::before { content: ""; width: 14px; height: 14px; background: var(--muted); border-radius: 50%; position: relative; top: -5px; }
-.user-logo::after { content: ""; width: 22px; height: 10px; background: var(--muted); border-radius: 50% 50% 40% 40%; position: absolute; top: 24px; }
-.user-logo.alert { border: 2px solid #d32f2f; }
-.user-logo:hover { transform: scale(1.06); }
+.icon-btn:hover { background: transparent; transform: scale(1.1); color: var(--accent); }
+.icon-btn.delete:hover { color: red; }
 
-.auth-dropdown {
-  position: absolute; top: 60px; right: 0;
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  opacity: 0; visibility: hidden; display: flex; flex-direction: column;
-  box-shadow: 0 6px 20px var(--shadow); padding: 10px; min-width: 180px;
-  transition: all 0.2s ease; pointer-events: none;
+/* 3. Inline Edit Input */
+.edit-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 0.95rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
 }
-.auth-container:hover .auth-dropdown { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
-.auth-dropdown span { color: var(--muted); font-size: 0.9rem; margin-bottom: 6px; }
-.auth-dropdown button { width: 100%; justify-content: center; margin-top: 6px; }
+/* ... (Keep all your existing CSS) ... */
 
-/* ---------- Modals ---------- */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 1000; }
-.modal-overlay.active { display: flex; }
-.modal-content { background: var(--card); border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.15); padding: 24px; border-radius: var(--radius); width: 100%; max-width: 320px; text-align: center; }
-.modal-content h3 { margin-top: 0; color: var(--accent); }
-.modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); box-sizing: border-box; }
-.modal-actions { display: flex; gap: 10px; margin-top: 10px; }
-.btn-primary { background: var(--accent); color: #fff; border: none; flex: 1; justify-content: center; }
-.btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); flex: 1; justify-content: center; }
+/* ---------- New Feature: Empty State (Get Started) ---------- */
+.empty-state {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
 
-/* ---------- Empty States ---------- */
-.empty-state, .guest-state { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; text-align: center; animation: fadeIn 0.5s ease; }
-.guest-state h2 { color: #d32f2f; }
-.action-buttons { display: flex; gap: 16px; margin-top: 10px; }
-.btn-black { background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; transition: transform 0.2s; }
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.empty-state p {
+  color: var(--muted);
+  max-width: 400px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.empty-state .start-btn {
+  background: var(--text); /* Solid Black */
+  color: #fff;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.empty-state .start-btn:hover {
+  transform: scale(1.05);
+  background: #333;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* ... (Keep existing CSS) ... */
+
+/* ---------- Guest & Empty States ---------- */
+.empty-state, .guest-state {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.guest-state h2 { color: #d32f2f; /* Warning Red */ }
+.guest-state p { color: var(--text); }
+
+/* Button Group for Empty State */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* Primary Button (Black) */
+.btn-black {
+  background: #000;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
 .btn-black:hover { transform: scale(1.05); }
-.btn-outline { background: #fff; color: #000; padding: 12px 24px; border-radius: 8px; border: 1px solid #000; cursor: pointer; transition: transform 0.2s; }
+
+/* Outline Button (White) */
+.btn-outline {
+  background: #fff;
+  color: #000;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid #000;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s, background 0.2s;
+}
 .btn-outline:hover { transform: scale(1.05); background: #f9f9f9; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* 1. Make the section header a positioning context */
+.domain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 5px; /* Add some breathing room */
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+/* 2. Optional: Light grey background on hover to show active area */
+.domain-header:hover {
+    background-color: #f9f9f9;
+}
+
+/* 3. Hide the controls (Edit/Delete) by default */
+.domain-controls {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    opacity: 0; /* HIDDEN */
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* 4. SHOW them when the header is hovered */
+.domain-header:hover .domain-controls {
+    opacity: 1; /* VISIBLE */
+}
+
+/* 5. Mobile Support: Always show on touch devices (optional, but good UX) */
+@media (hover: none) {
+    .domain-controls {
+        opacity: 1;
+    }
+}
+
+/* --- BUTTON STYLES --- */
+
+/* Base Icon Button */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+/* 6. ORANGE Hover for Edit (The requested feature) */
+.edit-btn {
+    color: #888; /* Grey default */
+}
+.edit-btn:hover {
+    background-color: #fff3e0; /* Light Orange BG */
+    color: #f57c00; /* Deep Orange Icon */
+}
+
+/* 7. RED Hover for Delete (Existing style) */
+.deleteSectionBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #888;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+.deleteSectionBtn:hover {
+    background-color: #ffebee; /* Light Red BG */
+    color: #d32f2f; /* Deep Red Icon */
+}
