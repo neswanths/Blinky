@@ -178,6 +178,7 @@ async function renderAllSections() {
 
 // --- STATE RENDERERS ---
 
+// *** THIS FUNCTION WAS MISSING IN YOUR CODE ***
 function renderGuestState() {
   const container = document.querySelector('.container');
   const topBtn = document.getElementById("addNewSection");
@@ -295,30 +296,23 @@ function createSectionDOM(title, id) {
   box.className = "box";
   box.id = `domain-${id}`;
 
-  // RESPONSIVE HEADER: flex-wrap allows title and buttons to stack on tiny screens
+  // 1. ADD CLASS: "domain-header" for CSS hover target
   const headerDiv = document.createElement("div");
-  headerDiv.style.display = "flex";
-  headerDiv.style.justifyContent = "space-between";
-  headerDiv.style.alignItems = "center";
-  headerDiv.style.marginBottom = "15px";
-  headerDiv.style.flexWrap = "wrap"; // <--- RESPONSIVE FIX
-  headerDiv.style.gap = "10px";      // <--- RESPONSIVE FIX
+  headerDiv.className = "domain-header"; 
 
   const h3 = document.createElement("h3");
   h3.textContent = title;
   h3.style.margin = "0";
-  h3.style.wordBreak = "break-word"; // Prevent long words from breaking layout
+  h3.style.wordBreak = "break-word";
 
+  // 2. ADD CLASS: "domain-controls" to group buttons
   const controlsDiv = document.createElement("div");
-  controlsDiv.style.display = "flex";
-  controlsDiv.style.gap = "8px";
-  controlsDiv.style.marginLeft = "auto"; // Push controls to right even when wrapped
+  controlsDiv.className = "domain-controls"; 
 
-  // EDIT BUTTON
+  // --- EDIT BUTTON ---
   const editBtn = document.createElement("button");
-  editBtn.className = "icon-btn"; 
+  editBtn.className = "icon-btn edit-btn"; // Class for orange hover
   editBtn.innerHTML = "&#9998;"; 
-  editBtn.style.color = "#888";
   editBtn.title = "Rename Section";
 
   editBtn.addEventListener("click", () => {
@@ -330,7 +324,7 @@ function createSectionDOM(title, id) {
     input.className = "edit-input";
     input.style.fontSize = "1.1rem"; 
     input.style.fontWeight = "bold";
-    input.style.flex = "1"; // Allow input to fill space
+    input.style.flex = "1"; 
     input.style.minWidth = "150px"; 
     
     h3.style.display = "none";
@@ -341,10 +335,14 @@ function createSectionDOM(title, id) {
         const newName = input.value.trim();
         if (newName && newName !== title) {
             try {
+                // Compatible with backend Fix: Don't expect bookmarks return
                 await API.request(`/domains/${id}?new_name=${encodeURIComponent(newName)}`, "PUT");
                 h3.textContent = newName;
                 title = newName;
-            } catch (e) { alert("Could not rename section"); }
+            } catch (e) { 
+                alert("Could not rename section"); 
+                console.error(e);
+            }
         }
         input.remove();
         h3.style.display = "block";
@@ -354,10 +352,10 @@ function createSectionDOM(title, id) {
     input.addEventListener("blur", saveRename);
   });
 
+  // --- DELETE BUTTON ---
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "deleteSectionBtn"; 
   deleteBtn.innerHTML = "&times;";
-  deleteBtn.style.position = "static"; 
   
   deleteBtn.addEventListener("click", () => {
     openModal({
@@ -400,13 +398,13 @@ function setupAddUrlForm(btn, domainId, listElement) {
     
     const input = document.createElement("input");
     input.placeholder = "google.com";
-    input.style.flex = "1";     // <--- RESPONSIVE FIX (Takes available space)
-    input.style.width = "auto"; // <--- RESPONSIVE FIX (Resets fixed width)
-    input.style.minWidth = "0"; // <--- RESPONSIVE FIX (Prevents overflow)
+    input.style.flex = "1";     // <--- RESPONSIVE FIX
+    input.style.width = "auto"; 
+    input.style.minWidth = "0"; 
     
     const submit = document.createElement("button");
     submit.textContent = "Add";
-    submit.style.flex = "0 0 auto"; // Prevent button from squishing
+    submit.style.flex = "0 0 auto"; 
 
     const msg = document.createElement("div");
     msg.style.fontSize = "0.8rem"; 

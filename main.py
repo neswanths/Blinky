@@ -6,7 +6,6 @@ from sqlalchemy import Column, ForeignKey, Integer
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from typing import List, Optional
@@ -25,6 +24,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
+# --- DATABASE MODELS ---
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True, description="Unique ID of the User")
@@ -65,7 +66,8 @@ class Bookmark(SQLModel, table=True):
     domain: "Domain" = Relationship(back_populates="bookmarks")
 
 
-# Pydantic Models
+# --- PYDANTIC MODELS ---
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -104,8 +106,8 @@ class BookmarkResponse(BaseModel):
     title: str
 
 
-# Database setup
-# Database setup - PRODUCTION ONLY
+# --- DATABASE SETUP ---
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
@@ -130,8 +132,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# CORS
-# CORS
+# --- CORS ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -143,7 +144,8 @@ app.add_middleware(
 )
 
 
-# Auth Helper Functions
+# --- AUTH HELPER FUNCTIONS ---
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -184,7 +186,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     return user
 
 
-# Routes
+# --- ROUTES ---
+
 @app.get("/")
 def read_root():
     return {"message": "Prototype API for Blinky-A bookmark manager"}
@@ -225,7 +228,6 @@ def create_user(user_data: UserCreate):
         session.commit()
         session.refresh(new_user)
         
-        # Return a proper response that matches UserResponse
         return {
             "id": new_user.id,
             "email": new_user.email,
@@ -238,7 +240,8 @@ def get_current_user_info(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-# Domains
+# --- DOMAINS ---
+
 @app.post("/domains", response_model=DomainResponse, status_code=201)
 def create_domain(domain: DomainCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
@@ -247,12 +250,10 @@ def create_domain(domain: DomainCreate, current_user: User = Depends(get_current
         session.commit()
         session.refresh(db_domain)
         
-        # FIX: Create the response object manually while we are still in the session.
-        # This tells FastAPI "Here is the exact data" so it doesn't try to touch the DB.
         return DomainResponse(
             id=db_domain.id, 
             name=db_domain.name, 
-            bookmarks=[] # We know a new domain has no bookmarks
+            bookmarks=[] 
         )
 
 
@@ -260,7 +261,6 @@ def create_domain(domain: DomainCreate, current_user: User = Depends(get_current
 def get_domains(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         user = session.get(User, current_user.id)
-        # Return domains with their bookmarks
         result = []
         for domain in user.domains:
             domain_dict = {
@@ -275,18 +275,23 @@ def get_domains(current_user: User = Depends(get_current_user)):
         return result
 
 
-@app.put("/domains/{domain_id}", response_model=DomainResponse)
+# --- FIXED ENDPOINT ---
+@app.put("/domains/{domain_id}", response_model=Domain) 
 def update_domain_name(
     domain_id: int, 
     new_name: str, 
     current_user: User = Depends(get_current_user)
 ):
+    # Use context manager instead of Depends(get_session) because get_session isn't defined
     with Session(engine) as session:
         domain = session.get(Domain, domain_id)
-        if not domain or domain.user_id != current_user.id:
-            raise HTTPException(status_code=404, detail="Domain not found")
+        if not domain:
+            raise HTTPException(status_code=404, detail="Section not found")
+        if domain.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
         
         domain.name = new_name
+        session.add(domain)
         session.commit()
         session.refresh(domain)
         return domain
@@ -303,11 +308,11 @@ def delete_domain(domain_id: int, current_user: User = Depends(get_current_user)
         session.commit()
 
 
-# Bookmarks
+# --- BOOKMARKS ---
+
 @app.post("/bookmarks", response_model=BookmarkResponse, status_code=201)
 def add_bookmark(bookmark: BookmarkCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
-        # Verify domain belongs to user
         domain = session.get(Domain, bookmark.domain_id)
         if not domain or domain.user_id != current_user.id:
             raise HTTPException(status_code=404, detail="Domain not found")
@@ -343,7 +348,6 @@ def change_bookmark_title(
         if not bookmark:
             raise HTTPException(status_code=404, detail="Bookmark not found")
         
-        # Verify ownership through domain
         domain = session.get(Domain, bookmark.domain_id)
         if not domain or domain.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
@@ -361,7 +365,6 @@ def delete_bookmark(bookmark_id: int, current_user: User = Depends(get_current_u
         if not bookmark:
             raise HTTPException(status_code=404, detail="Bookmark not found")
         
-        # Verify ownership through domain
         domain = session.get(Domain, bookmark.domain_id)
         if not domain or domain.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
