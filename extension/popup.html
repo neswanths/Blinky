@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blinky</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Auth state -->
+    <div id="view-not-signed-in" class="view hidden">
+      <div class="logo-area">
+        <span class="dot">●</span>
+        <span class="brand">Blinky</span>
+      </div>
+      <p class="hint">Sign in to save bookmarks from your browser.</p>
+      <button id="btn-signin" class="btn-primary">Connect to Blinky</button>
+      <p class="sub-hint">Opens the Blinky web app</p>
+    </div>
+
+    <!-- Main state (signed in) -->
+    <div id="view-main" class="view hidden">
+      <!-- Header -->
+      <div class="popup-header">
+        <span class="dot">●</span>
+        <span class="brand">Blinky</span>
+        <span id="user-info" class="user-info hidden"></span>
+        <button id="btn-signout" class="btn-icon" title="Sign out">✕</button>
+      </div>
+
+      <!-- Save current tab -->
+      <div class="save-section">
+        <div class="current-tab" id="current-tab-info">
+          <img id="tab-favicon" class="tab-favicon" src="" alt="" />
+          <span id="tab-title" class="tab-title">Loading…</span>
+        </div>
+        <div class="save-row" id="save-row">
+          <span class="save-label" id="save-label">Section:</span>
+          <div id="section-picker-container" class="section-picker-container hidden">
+            <select id="section-select" class="section-select"></select>
+            <input type="text" id="new-section-input" class="new-section-input hidden" placeholder="New section name (Enter)" />
+          </div>
+          <button id="btn-save" class="btn-primary hidden" style="padding: 6px 12px; font-size: 0.8rem; flex-shrink: 0;">Save</button>
+        </div>
+        <p id="save-status" class="save-status hidden"></p>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- Recent bookmarks -->
+      <div class="recents">
+        <p class="recents-label">Recent</p>
+        <ul id="recents-list" class="recents-list">
+          <li class="recents-loading">Loading…</li>
+        </ul>
+      </div>
+
+      <!-- Open web app link -->
+      <a id="open-webapp" class="open-webapp" href="#" target="_blank">
+        Open in Blinky →
+      </a>
+    </div>
+
+    <!-- Loading state -->
+    <div id="view-loading" class="view">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

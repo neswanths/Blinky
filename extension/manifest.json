@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Blinky",
+  "description": "Save the current tab to Blinky with one click.",
+  "version": "1.0.0",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "https://*.vercel.app/*",
+        "https://*.fly.dev/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "icons": {
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html",
+    "default_title": "Blinky — Save this page"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.fly.dev/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ]
+}
