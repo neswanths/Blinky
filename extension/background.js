@@ -1,7 +1,7 @@
 // Blinky Extension — background.js (Service Worker)
 // Handles API calls on behalf of the popup (avoids CORS issues in MV3)
 
-const API_URL = 'http://localhost:8000' // Update to Fly.io URL for production
+const API_URL = 'https://blinky-api-opq2.onrender.com'
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'API_REQUEST') {

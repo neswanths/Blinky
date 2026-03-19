@@ -1,8 +1,8 @@
 // Blinky Extension — popup.js
 // All API calls go through background.js service worker
 
-const API_URL = 'http://localhost:8000' // Will be updated to Fly.io URL in production
-const WEBAPP_URL = 'http://localhost:5173' // Will be updated to Vercel URL in production
+const API_URL = 'https://blinky-api-opq2.onrender.com'
+const WEBAPP_URL = 'https://blinky-tau.vercel.app'
 
 let activeBookmarkId = null;
 let currentTab = null;
