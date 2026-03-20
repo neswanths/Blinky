@@ -125,6 +125,18 @@ input {
   gap: 12px;
 }
 
+.navbar-link {
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.navbar-link:hover {
+  color: var(--text);
+}
+
 /* Google sign-in button */
 .btn-google {
   display: inline-flex;
@@ -187,6 +199,33 @@ input {
   color: var(--text);
   border-color: var(--border-strong);
   background: var(--surface);
+}
+
+/* Responsive Navbar overrides */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 12px;
+  }
+  .navbar-right {
+    gap: 8px;
+  }
+  .navbar-brand {
+    font-size: 1rem;
+    gap: 4px;
+  }
+  .navbar-link {
+    margin-right: 0.25rem;
+    font-size: 0.8rem;
+  }
+  .btn-google {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    gap: 6px;
+  }
+  .btn-google svg {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 /* ---------- Main Content ---------- */

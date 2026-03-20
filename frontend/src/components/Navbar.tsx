@@ -28,7 +28,7 @@ export default function Navbar({ user, onLogout }: Props) {
       </div>
 
       <div className="navbar-right">
-        <a href="/extension.zip" download className="navbar-link" style={{ marginRight: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>
+        <a href="/extension.zip" download className="navbar-link">
           Extension
         </a>
         {user ? (
