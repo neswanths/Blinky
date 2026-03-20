@@ -17,7 +17,14 @@ elif DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 connect_args = {"check_same_thread": False} if _is_sqlite else {}
-engine = create_engine(DATABASE_URL, echo=False, connect_args=connect_args)
+pool_kwargs = {} if _is_sqlite else {"pool_pre_ping": True, "pool_recycle": 300, "pool_size": 5, "max_overflow": 10}
+
+engine = create_engine(
+    DATABASE_URL,
+    echo=False,
+    connect_args=connect_args,
+    **pool_kwargs
+)
 
 
 def get_session() -> Generator[Session, None, None]:
