@@ -61,7 +61,7 @@ async function init() {
 
   // Start parallel promises
   const tabPromise = chrome.tabs.query({ active: true, currentWindow: true })
-  const userPromise = apiRequest('GET', '/users/me').catch(e => {
+  const userPromise = apiRequest('GET', '/auth/me').catch(e => {
     console.error('Failed to get user info', e)
     return null
   })

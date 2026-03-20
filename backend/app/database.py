@@ -4,6 +4,7 @@ load_dotenv()
 import os
 from sqlmodel import create_engine, Session
 from typing import Generator
+from sqlalchemy.pool import NullPool
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
@@ -17,7 +18,7 @@ elif DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 connect_args = {"check_same_thread": False} if _is_sqlite else {}
-pool_kwargs = {} if _is_sqlite else {"pool_pre_ping": True, "pool_recycle": 300, "pool_size": 5, "max_overflow": 10}
+pool_kwargs = {} if _is_sqlite else {"poolclass": NullPool}
 
 engine = create_engine(
     DATABASE_URL,
