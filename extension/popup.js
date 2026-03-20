@@ -56,22 +56,22 @@ async function init() {
 
   show('view-main')
 
-  try {
-    const me = await apiRequest('GET', '/users/me')
-    const userInfo = document.getElementById('user-info')
-    if (userInfo && me && me.name) {
-      userInfo.textContent = me.name.split(' ')[0]
-      userInfo.classList.remove('hidden')
-    }
-  } catch (e) {
-    console.error('Failed to get user info', e)
-  }
-
-  // Set webapp link
+  // Set webapp link immediately
   document.getElementById('open-webapp').href = WEBAPP_URL
 
-  // Get current tab info
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  // Start parallel promises
+  const tabPromise = chrome.tabs.query({ active: true, currentWindow: true })
+  const userPromise = apiRequest('GET', '/users/me').catch(e => {
+    console.error('Failed to get user info', e)
+    return null
+  })
+  const domainsPromise = apiRequest('GET', '/domains').catch(e => {
+    console.error('Failed to load domains', e)
+    return null
+  })
+
+  // 1. Render Tab info ASAP
+  const [tab] = await tabPromise
   if (tab) {
     currentTab = tab
     const favicon = getFavicon(tab.url)
@@ -85,9 +85,35 @@ async function init() {
     document.getElementById('tab-title').textContent = tab.title || tab.url
   }
 
-  // Load domains
+  // Set up a slow-loading indicator for server wake-up
+  const saveLabel = document.getElementById('save-label')
+  saveLabel.textContent = 'Loading...'
+  const slowTimer = setTimeout(() => {
+    saveLabel.textContent = 'Waking server...'
+  }, 3000)
+
+  // 2. Render User Info
+  const me = await userPromise
+  const userInfo = document.getElementById('user-info')
+  if (userInfo && me && me.name) {
+    userInfo.textContent = me.name.split(' ')[0]
+    userInfo.classList.remove('hidden')
+  }
+
+  // 3. Render Domains and Sections
   try {
-    const domains = await apiRequest('GET', '/domains')
+    const domains = await domainsPromise
+    clearTimeout(slowTimer)
+    
+    if (!domains) {
+      saveLabel.textContent = 'Server asleep'
+      document.getElementById('recents-list').innerHTML = '<li class="recents-loading">Server is waking up...</li>'
+      setStatus('Backend waking up. Please reopen in 30s.', 'error')
+      return
+    }
+
+    saveLabel.textContent = 'Section:'
+
     const select = document.getElementById('section-select')
     
     let generalDomain = domains.find(d => d.name.toLowerCase() === 'general')
@@ -116,7 +142,6 @@ async function init() {
 
     let targetDomainId = generalDomain ? generalDomain.id : (domains.length > 0 ? domains[0].id : null)
 
-    const saveLabel = document.getElementById('save-label')
     const pickerContainer = document.getElementById('section-picker-container')
     const inputContainer = document.getElementById('new-section-input')
     const btnSave = document.getElementById('btn-save')

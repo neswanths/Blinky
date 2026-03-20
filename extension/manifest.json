@@ -32,6 +32,7 @@
     "storage"
   ],
   "host_permissions": [
+    "https://blinky-api-opq2.onrender.com/*",
     "https://*.fly.dev/*",
     "http://localhost/*",
     "http://127.0.0.1/*"
