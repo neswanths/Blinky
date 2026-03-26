@@ -1,23 +1,25 @@
 # Blinky ●
 
-**No mess. No friction.**
+**Your Centralized Bookmark Manager & Chrome Extension Hub**
 
-Blinky is a minimal, monochromatic bookmark manager designed for speed and focus. Stop losing links in bloated browser folders—organize them into clean, draggable sections and save them with a single click via the Chrome extension.
+Blinky is a minimal, monochromatic bookmark manager designed for speed and focus. Stop losing links in bloated browser folders—treat Blinky as your **centralized hub** by organizing them into clean, draggable sections and saving them with a single click via the integrated Chrome extension.
 
-## ✨ Features
+## ✨ Core Highlights
 
-- **Monochromatic Design**: A focused, distraction-free UI that puts your content first.
-- **Section-based Organization**: Group your bookmarks into custom categories (e.g., "AI Tools", "Research", "Project Alpha").
-- **Drag & Drop**: Effortlessly reorder bookmarks or move them between sections.
-- **Instant Save**: Use the Chrome Extension to save the current tab to your "General" section (or any other) in one click.
-- **Google Authentication**: Frictionless sign-on—no passwords to remember.
-- **Interactive Demo**: New users can explore a guided walkthrough of the core features.
+- **Centralized Bookmark Hub**: A single, unified dashboard to manage all your web discoveries across different devices and contexts.
+- **Instant Chrome Extension Integration**: Use the Blinky Chrome Extension to save your current tab to your "General" section (or any custom category) instantly, making curation totally frictionless.
+- **Monochromatic & Minimalist Design**: A focused, distraction-free UI that puts your saved content first without the visual noise.
+- **Section-based Organization**: Group your bookmarks into custom categories (e.g., "AI Tools", "Research", "Project Alpha") for structured accessibility.
+- **Drag & Drop**: Effortlessly reorder bookmarks or move them between sections to keep your centralized hub perfectly organized.
+- **Google Authentication**: Frictionless sign-on—securely access your centralized bookmarks anywhere without remembering another password.
+- **Interactive Demo**: New users can explore a guided walkthrough of the core features right from the start.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Deployment
 
-- **Frontend**: React (Vite), TypeScript, vanilla CSS, `@dnd-kit` for drag and drop.
-- **Backend**: Python (FastAPI), SQLite, JWT Authentication.
-- **Extension**: Chrome Extension Manifest V3.
+- **Frontend**: React (Vite), TypeScript, vanilla CSS, `@dnd-kit`. Hosted on **Vercel**.
+- **Backend**: Python (FastAPI), Google OAuth & JWT Authentication. Hosted on **Render** (with automatic ping to prevent cold starts).
+- **Database**: **PostgreSQL** hosted via **Neon DB**.
+- **Extension**: Chrome Extension Manifest V3. Distributed via ZIP to bypass web store fees.
 
 ---
 
@@ -43,6 +45,7 @@ Blinky is a minimal, monochromatic bookmark manager designed for speed and focus
    GOOGLE_CLIENT_ID=your_id.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=your_secret
    JWT_SECRET=your_secret_key
+   DATABASE_URL=postgresql://user:password@neon.hostname/dbname
    ```
 5. Start the server:
    ```bash
