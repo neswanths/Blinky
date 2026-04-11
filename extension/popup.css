@@ -7,11 +7,22 @@ body {
   background: #fafafa;
   color: #0a0a0a;
   width: 280px;
-  min-height: 120px;
+  width: 280px;
+  height: 500px;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
-.view { padding: 16px; }
+#app {
+  height: 100%;
+}
+
+.view { padding: 16px; box-sizing: border-box; }
+#view-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .hidden { display: none !important; }
 
 /* Not signed in */
@@ -176,7 +187,13 @@ body {
 .divider { height: 1px; background: #ebebeb; margin: 0 -16px; }
 
 /* Recents */
-.recents { padding-top: 12px; }
+.recents {
+  padding-top: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
 .recents-label {
   font-size: 0.7rem;
@@ -185,6 +202,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .recents-list {
@@ -192,6 +210,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: -8px;
+  padding-right: 8px;
 }
 
 .recents-list li a {

@@ -10,6 +10,7 @@ import {
   DragOverEvent,
   closestCenter,
 } from '@dnd-kit/core'
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { Domain } from '../api/bookmarks'
 import Section from './Section'
 import Modal from './Modal'
@@ -23,6 +24,7 @@ interface Props {
   onRenameBookmark: (bookmarkId: number, domainId: number, title: string) => Promise<void>
   onMoveBookmark: (bookmarkId: number, fromDomainId: number, toDomainId: number, position?: number) => Promise<void>
   onDeleteBookmark: (bookmarkId: number, domainId: number) => Promise<void>
+  onMoveDomain: (domainId: number, position: number) => Promise<void>
 }
 
 export default function SectionGrid({
@@ -34,6 +36,7 @@ export default function SectionGrid({
   onRenameBookmark,
   onMoveBookmark,
   onDeleteBookmark,
+  onMoveDomain,
 }: Props) {
   const [showNewSection, setShowNewSection] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -55,8 +58,9 @@ export default function SectionGrid({
   }
 
   function handleDragOver(event: DragOverEvent) {
-    const over = event.over
+    const { active, over } = event
     if (!over) { setOverDomainId(null); return }
+    if ((active.id as string).startsWith('domain-')) return
 
     // Check if hovering over a domain drop zone
     if ((over.id as string).startsWith('domain-')) {
@@ -76,6 +80,18 @@ export default function SectionGrid({
 
     if (!over || !active.id) return
     const activeDndId = active.id as string
+    
+    if (activeDndId.startsWith('domain-')) {
+      if (active.id !== over.id) {
+        const domainId = parseInt(activeDndId.replace('domain-', ''))
+        const overIndex = domains.findIndex(d => `domain-${d.id}` === over.id)
+        if (overIndex !== -1) {
+          onMoveDomain(domainId, overIndex)
+        }
+      }
+      return
+    }
+
     if (!activeDndId.startsWith('bookmark-')) return
 
     const bookmarkId = parseInt(activeDndId.replace('bookmark-', ''))
@@ -113,6 +129,12 @@ export default function SectionGrid({
     ? domains.find(d => d.bookmarks.some(b => `bookmark-${b.id}` === activeId))
     : null
   const activeBookmark = activeDomain?.bookmarks.find(b => `bookmark-${b.id}` === activeId)
+  
+  const activeDomainObject = activeId?.startsWith('domain-')
+    ? domains.find(d => `domain-${d.id}` === activeId)
+    : null
+
+  const domainSortableIds = domains.map(d => `domain-${d.id}`)
 
   return (
     <DndContext
@@ -123,18 +145,20 @@ export default function SectionGrid({
       onDragEnd={handleDragEnd}
     >
       <div className="section-grid">
-        {domains.map(domain => (
-          <Section
-            key={domain.id}
-            domain={domain}
-            isOver={overDomainId === domain.id}
-            onRename={name => onRenameDomain(domain.id, name)}
-            onDelete={() => onDeleteDomain(domain.id)}
-            onAddBookmark={(url, title) => onAddBookmark(url, title, domain.id)}
-            onRenameBookmark={(bookmarkId, title) => onRenameBookmark(bookmarkId, domain.id, title)}
-            onDeleteBookmark={bookmarkId => onDeleteBookmark(bookmarkId, domain.id)}
-          />
-        ))}
+        <SortableContext items={domainSortableIds} strategy={rectSortingStrategy}>
+          {domains.map(domain => (
+            <Section
+              key={domain.id}
+              domain={domain}
+              isOver={overDomainId === domain.id}
+              onRename={name => onRenameDomain(domain.id, name)}
+              onDelete={() => onDeleteDomain(domain.id)}
+              onAddBookmark={(url, title) => onAddBookmark(url, title, domain.id)}
+              onRenameBookmark={(bookmarkId, title) => onRenameBookmark(bookmarkId, domain.id, title)}
+              onDeleteBookmark={bookmarkId => onDeleteBookmark(bookmarkId, domain.id)}
+            />
+          ))}
+        </SortableContext>
 
         {/* Add section button */}
         <button className="add-section-btn" onClick={() => setShowNewSection(true)}>
@@ -145,11 +169,18 @@ export default function SectionGrid({
 
       {/* DragOverlay — ghost element while dragging */}
       <DragOverlay>
-        {activeBookmark && (
+      <DragOverlay>
+        {activeBookmark ? (
           <div className="drag-ghost">
             {activeBookmark.title}
           </div>
-        )}
+        ) : activeDomainObject ? (
+          <div className="drag-ghost section-card" style={{ height: 320, width: 280, opacity: 0.9, transform: 'rotate(2deg)' }}>
+            <div className="section-header">
+               <h3 className="section-title">{activeDomainObject.name}</h3>
+            </div>
+          </div>
+        ) : null}
       </DragOverlay>
 
       <Modal

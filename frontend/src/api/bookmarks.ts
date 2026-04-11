@@ -44,6 +44,11 @@ export const updateDomain = async (id: number, name: string): Promise<Domain> =>
   return res.data
 }
 
+export const moveDomain = async (id: number, position: number): Promise<Domain> => {
+  const res = await client.patch(`/domains/${id}/move`, { position })
+  return res.data
+}
+
 export const deleteDomain = async (id: number): Promise<void> => {
   await client.delete(`/domains/${id}`)
 }

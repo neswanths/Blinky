@@ -21,6 +21,7 @@ export default function Home() {
     renameBookmark,
     moveBookmark,
     removeBookmark,
+    moveDomain,
   } = useBookmarks(isLoggedIn)
 
   if (authLoading) {
@@ -91,6 +92,7 @@ export default function Home() {
             onRenameBookmark={renameBookmark}
             onMoveBookmark={moveBookmark}
             onDeleteBookmark={removeBookmark}
+            onMoveDomain={moveDomain}
           />
         )}
       </main>

@@ -2,8 +2,9 @@ import { useState } from 'react'
 import {
   SortableContext,
   verticalListSortingStrategy,
+  useSortable,
 } from '@dnd-kit/sortable'
-import { useDroppable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 import { Domain } from '../api/bookmarks'
 import BookmarkItem from './BookmarkItem'
 import Modal from './Modal'
@@ -45,11 +46,17 @@ export default function Section({
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [editTitle, setEditTitle] = useState(domain.name)
 
-  // Make this section a drop zone
-  const { setNodeRef, isOver } = useDroppable({
+  // Make this section a drop zone and sortable item
+  const { setNodeRef, attributes, listeners, isDragging, isOver, transform, transition } = useSortable({
     id: `domain-${domain.id}`,
     data: { domainId: domain.id },
   })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : undefined,
+  }
 
   const sortableIds = domain.bookmarks.map(b => `bookmark-${b.id}`)
 
@@ -57,11 +64,12 @@ export default function Section({
     <>
       <div
         ref={setNodeRef}
-        className={`section-card ${isOver ? 'drop-target' : ''}`}
+        style={style}
+        className={`section-card ${isOver && !isDragging ? 'drop-target' : ''}`}
         id={`domain-${domain.id}`}
       >
         {/* Header */}
-        <div className="section-header">
+        <div className="section-header" {...attributes} {...listeners} style={{ cursor: 'grab' }}>
           {isEditingTitle ? (
             <input
               autoFocus

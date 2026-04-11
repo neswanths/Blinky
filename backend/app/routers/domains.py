@@ -5,7 +5,7 @@ from typing import List
 from app.auth import get_current_user
 from app.database import get_session
 from app.models import Domain, User, Bookmark
-from app.schemas import DomainCreate, DomainUpdate, DomainResponse, BookmarkResponse
+from app.schemas import DomainCreate, DomainUpdate, DomainMove, DomainResponse, BookmarkResponse
 
 router = APIRouter(prefix="/domains", tags=["domains"])
 
@@ -77,3 +77,40 @@ def delete_domain(
         raise HTTPException(status_code=404, detail="Domain not found")
     session.delete(domain)
     session.commit()
+
+
+@router.patch("/{domain_id}/move", response_model=DomainResponse)
+def move_domain(
+    domain_id: int,
+    payload: DomainMove,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    domain = session.get(Domain, domain_id)
+    if not domain or domain.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Domain not found")
+
+    target_domains = session.exec(
+        select(Domain).where(
+            Domain.user_id == current_user.id,
+            Domain.id != domain_id,
+        )
+    ).all()
+    target_domains.sort(key=lambda d: d.position)
+
+    new_position = payload.position
+    new_position = max(0, min(new_position, len(target_domains)))
+
+    domain.position = new_position
+
+    for i, d in enumerate(target_domains):
+        if i >= new_position:
+            d.position = i + 1
+        else:
+            d.position = i
+        session.add(d)
+
+    session.add(domain)
+    session.commit()
+    session.refresh(domain)
+    return _domain_to_response(domain)

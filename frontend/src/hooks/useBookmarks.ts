@@ -10,6 +10,7 @@ import {
   updateBookmark,
   moveBookmark,
   deleteBookmark,
+  moveDomain,
 } from '../api/bookmarks'
 
 export function useBookmarks(isLoggedIn: boolean) {
@@ -113,6 +114,15 @@ export function useBookmarks(isLoggedIn: boolean) {
     await moveBookmark(bookmarkId, toDomainId, position)
   }
 
+  const moveDomainAction = async (domainId: number, position: number) => {
+    setDomains(prev => {
+      const oldIndex = prev.findIndex(d => d.id === domainId)
+      if (oldIndex === -1) return prev
+      return arrayMove(prev, oldIndex, position)
+    })
+    await moveDomain(domainId, position)
+  }
+
   const removeBookmark = async (bookmarkId: number, domainId: number) => {
     await deleteBookmark(bookmarkId)
     setDomains(prev =>
@@ -135,5 +145,6 @@ export function useBookmarks(isLoggedIn: boolean) {
     renameBookmark,
     moveBookmark: moveBookmarkAction,
     removeBookmark,
+    moveDomain: moveDomainAction,
   }
 }

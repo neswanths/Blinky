@@ -165,6 +165,30 @@ async function init() {
       if (!activeBookmarkId) {
         btnSave.disabled = true
         btnSave.textContent = '...'
+
+        if (!inputContainer.classList.contains('hidden')) {
+          const name = inputContainer.value.trim()
+          if (name) {
+            saveLabel.textContent = 'Creating...'
+            try {
+              const newDomain = await apiRequest('POST', '/domains', { name })
+              const opt = document.createElement('option')
+              opt.value = newDomain.id
+              opt.textContent = newDomain.name
+              select.insertBefore(opt, select.lastElementChild)
+              targetDomainId = newDomain.id
+              select.value = targetDomainId
+              inputContainer.classList.add('hidden')
+              select.classList.remove('hidden')
+            } catch (err) {
+              setStatus(`Error: ${err.message}`, 'error')
+              btnSave.disabled = false
+              btnSave.textContent = 'Save'
+              return
+            }
+          }
+        }
+
         await performSave(currentTab, targetDomainId)
         btnSave.textContent = 'Saved'
       }
@@ -232,6 +256,7 @@ async function init() {
             setStatus('Moved to new section! ✓', 'success')
           } else {
             // just updated targetDomainId, wait for save
+            saveLabel.textContent = 'Section:'
             btnSave.classList.remove('hidden')
           }
 

@@ -27,6 +27,10 @@ class DomainUpdate(BaseModel):
     name: str
 
 
+class DomainMove(BaseModel):
+    position: int
+
+
 class BookmarkResponse(BaseModel):
     id: int
     url: str
